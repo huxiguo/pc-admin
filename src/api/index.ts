@@ -47,6 +47,7 @@ class RequestHttp {
 				// if (config.headers && typeof config.headers.set === 'function') {
 				// 	config.headers.set('banaer', userStore.token)
 				// }
+				console.log('first', config.headers)
 				return config
 			},
 			(error: AxiosError) => {

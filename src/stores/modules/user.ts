@@ -3,10 +3,10 @@ import piniaPersistConfig from '@/config/piniaPersist'
 import { myTest } from '@/api/modules/login'
 
 export const useUserStore = defineStore(
-	'geeker-user',
+	'user',
 	() => {
-		const token = ref('111')
-		const userInfo = ref({ name: 'Geeker' })
+		const token = ref('')
+		const userInfo = ref({ name: 'xxxxxxxxx' })
 		// Set Token
 		function setToken(userToken: string) {
 			token.value = userToken
@@ -28,6 +28,6 @@ export const useUserStore = defineStore(
 		}
 	},
 	{
-		persist: piniaPersistConfig('geeker-user', ['token', 'userInfo'])
+		persist: piniaPersistConfig('user', ['token', 'userInfo'])
 	}
 )

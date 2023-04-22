@@ -1,12 +1,9 @@
 <template>
-	<div>
-		main
-		<el-button @click="router.back()">Default</el-button>
-	</div>
+	<Layout />
 </template>
 
 <script setup lang="ts">
-const router = useRouter()
+import Layout from '@/layouts/index.vue'
 </script>
 
 <style scoped lang="less"></style>

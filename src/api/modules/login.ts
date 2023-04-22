@@ -14,7 +14,7 @@ export const loginApi = (params: Login.ReqLoginForm) => {
 	// return http.post<Login.ResLogin>(PORT1 + `/login`, qs.stringify(params)); // post 请求携带表单参数  ==>  application/x-www-form-urlencoded
 	// return http.get<Login.ResLogin>(PORT1 + `/login?${qs.stringify(params, { arrayFormat: "repeat" })}`); // get 请求可以携带数组等复杂参数
 }
-// 用户户退出登录
+// 用户退出登录
 export const logoutApi = () => {
 	return http.post(`/logout`)
 }
