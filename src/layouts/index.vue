@@ -21,11 +21,12 @@
 				>
 					<el-scrollbar>
 						<el-menu
-							default-active="1"
+							:default-active="activePath"
 							router
 							:collapse="isCollapse"
 							:collapse-transition="false"
 							:unique-opened="true"
+							@select="handleSubMenuSelect"
 						>
 							<SubMenu />
 						</el-menu>
@@ -47,7 +48,11 @@ import ToolBarLeft from '@/layouts/Header/ToolBarLeft.vue'
 import ToolBarRight from '@/layouts/Header/ToolBarRight.vue'
 
 const globalStore = useGlobalStore()
-const isCollapse = computed(() => globalStore.isCollapse)
+const { isCollapse, activePath } = storeToRefs(globalStore)
+
+const handleSubMenuSelect = (path: string) => {
+	globalStore.setActivePathAction(path)
+}
 </script>
 
 <style scoped lang="scss">
