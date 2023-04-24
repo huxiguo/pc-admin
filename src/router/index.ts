@@ -118,7 +118,9 @@ router.beforeEach(async (to, from, next) => {
 	}
 
 	// 5.判断是否有 Token，没有重定向到 login 页面
-	if (!userStore.token) return next({ path: '/login', replace: true })
+	if (!userStore.token) {
+		return next({ path: '/login', replace: true })
+	}
 
 	// 8.正常访问页面
 	next()
