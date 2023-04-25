@@ -97,10 +97,18 @@
 					label="操作"
 					fixed="right"
 					align="center"
-					width="180px"
+					width="200px"
 				>
 					<template #default="scope">
 						<div class="perate">
+							<el-button
+								text
+								type="primary"
+								:icon="InfoFilled"
+								@click="handleEditBtnClick(scope.row)"
+							>
+								详情</el-button
+							>
 							<el-button
 								text
 								type="primary"
@@ -133,9 +141,13 @@
 </template>
 
 <script setup lang="ts">
-import { Edit, Delete, Search, CirclePlusFilled } from '@element-plus/icons-vue'
-import classData from '@/data/class'
-import collegeData from '@/data/college'
+import {
+	Edit,
+	Delete,
+	Search,
+	CirclePlusFilled,
+	InfoFilled
+} from '@element-plus/icons-vue'
 import type { FormInstance } from 'element-plus'
 
 /**
@@ -147,11 +159,7 @@ const searchFormRef = ref<FormInstance>()
  */
 const searchForm = reactive({
 	name: '',
-	class: '',
-	college: '',
-	type: 1,
-	date: '',
-	address: ''
+	stuNumber: ''
 })
 
 /**

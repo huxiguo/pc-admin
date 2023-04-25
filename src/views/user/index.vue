@@ -122,12 +122,54 @@
 				@current-change="handleCurrentChange"
 			/>
 		</div>
+		<!-- 编辑用户对话框 -->
+		<el-dialog
+			class="dialogBox"
+			v-model:model-value="editDialogVisible"
+			title="编辑用户"
+			width="30%"
+			center
+		>
+			<el-form :model="dialogForm" label-position="left" label-width="70px">
+				<el-form-item label="学号：" prop="number">
+					<el-input v-model="dialogForm.number" />
+				</el-form-item>
+				<el-form-item label="姓名：" prop="name">
+					<el-input v-model="dialogForm.name" />
+				</el-form-item>
+				<el-form-item label="性别：" prop="gender">
+					<el-input v-model="dialogForm.gender" />
+				</el-form-item>
+				<el-form-item label="手机号：" prop="phone">
+					<el-input v-model="dialogForm.phone" />
+				</el-form-item>
+				<el-form-item label="密码：" prop="password">
+					<el-input v-model="dialogForm.password" />
+				</el-form-item>
+				<el-form-item label="班级：" prop="class">
+					<el-input v-model="dialogForm.class" />
+				</el-form-item>
+				<el-form-item label="学院：" prop="college">
+					<el-input v-model="dialogForm.college" />
+				</el-form-item>
+			</el-form>
+			<template #footer>
+				<div class="dialog-footer">
+					<el-button @click="editDialogVisible = false">Cancel</el-button>
+					<el-button type="primary" @click="editDialogVisible = false">
+						Confirm
+					</el-button>
+				</div>
+			</template>
+		</el-dialog>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { Edit, Delete, Search } from '@element-plus/icons-vue'
 import type { FormInstance } from 'element-plus'
+
+import type { DialogForm } from './Interface/dialogForm'
 
 /**
  * 表单组件实例
@@ -177,11 +219,34 @@ const tableData = [
 ]
 
 /**
+ * 是否显示编辑用户对话框
+ */
+const editDialogVisible = ref(false)
+/**
+ *	编辑表单数据
+ */
+const dialogForm = reactive<DialogForm>({
+	name: '',
+	class: '',
+	college: '',
+	gender: '',
+	number: '',
+	password: '',
+	phone: ''
+})
+/**
  * 表格编辑按钮
  * @param rowData 行内数据
  */
 const handleEditBtnClick = (rowData: any) => {
-	console.log('rowData', rowData.name)
+	editDialogVisible.value = true
+	// 1. 回显表格行内数据
+	for (const key in dialogForm) {
+		console.log('item', key)
+		dialogForm[key] = rowData[key]
+	}
+	// 2. 获取表格最新数据
+	// 3. 发送请求更新数据
 }
 
 /**
