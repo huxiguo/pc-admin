@@ -4,129 +4,94 @@
 		<div class="card table-search">
 			<el-form :model="searchForm" ref="searchFormRef">
 				<!-- 第一行 -->
-				<el-row :gutter="20" class="row-first">
-					<el-col :span="6">
+				<el-row :gutter="20">
+					<el-col :span="10">
 						<el-form-item label="姓名:" prop="name">
 							<el-input v-model:model-value="searchForm.name" />
 						</el-form-item>
 					</el-col>
-					<el-col :span="6">
-						<el-form-item label="班级:" prop="class">
-							<el-select v-model="searchForm.class" placeholder="请选择班级">
-								<el-option
-									v-for="item in classData"
-									:key="item.lable"
-									:label="item.lable"
-									:value="item.value"
-								/>
-							</el-select>
+					<el-col :span="10">
+						<el-form-item label="学号:" prop="stuNumber">
+							<el-input v-model:model-value="searchForm.stuNumber" />
 						</el-form-item>
 					</el-col>
-					<el-col :span="6">
-						<el-form-item label="学院:" prop="college">
-							<el-select v-model="searchForm.college" placeholder="请选择学院">
-								<el-option
-									v-for="item in collegeData"
-									:key="item.lable"
-									:label="item.lable"
-									:value="item.value"
-								/>
-							</el-select>
-						</el-form-item>
-					</el-col>
-					<el-col :span="6">
-						<el-form-item label="进出:" prop="type">
-							<el-select v-model="searchForm.type" placeholder="请选择状态">
-								<el-option label="进入" :value="1" />
-								<el-option label="离开" :value="0" />
-							</el-select>
-						</el-form-item>
-					</el-col>
-				</el-row>
-				<!-- 第二行 -->
-				<el-row :gutter="20">
-					<el-col :span="6">
-						<el-form-item label="日期:" class="datePicker" prop="date">
-							<el-date-picker
-								v-model="searchForm.date"
-								type="date"
-								placeholder="选择日期"
-								format="YYYY-MM-DD"
-								value-format="x"
-							/>
-						</el-form-item>
-					</el-col>
-					<el-col :span="6">
-						<el-form-item label="地点:" prop="address">
-							<el-select
-								v-model="searchForm.address"
-								placeholder="请选择闸机位置"
-							>
-								<el-option label="一号机" value="1" />
-								<el-option label="二号机" value="2" />
-							</el-select>
-						</el-form-item>
-					</el-col>
-					<el-col :span="6" :offset="6">
+					<el-col :span="4">
 						<div class="operation">
 							<el-button
 								:icon="Search"
 								class="searchBtn"
 								@click="handleSearchBtnClick"
-								>查询</el-button
 							>
+								查询
+							</el-button>
 							<el-button
 								:icon="Delete"
 								class="resetBtn"
 								@click="handleResetBtnClick(searchFormRef)"
-								>重置</el-button
 							>
+								重置
+							</el-button>
 						</div>
 					</el-col>
 				</el-row>
 			</el-form>
 		</div>
 		<div class="card table-main">
-			<div class="table-header">
-				<div class="header-button-ri">
-					<el-button class="searchBtn" :icon="CirclePlusFilled">
-						添加用户
-					</el-button>
-				</div>
-			</div>
 			<el-table :data="tableData" border style="width: 100%">
+				<!-- 索引 -->
 				<el-table-column type="index" label="#" align="center" />
-				<el-table-column prop="number" label="学号" align="center" />
+				<!-- 学号 -->
+				<el-table-column
+					prop="number"
+					label="学号"
+					align="center"
+					width="180"
+				/>
+				<!-- 姓名 -->
 				<el-table-column
 					prop="name"
 					label="姓名"
 					show-overflow-tooltip
 					align="center"
+					width="100"
 				/>
+				<!-- 性别 -->
 				<el-table-column
 					prop="gender"
 					label="性别"
 					width="80px"
 					align="center"
 				/>
-				<el-table-column prop="class" label="班级" align="center" />
-				<el-table-column prop="college" label="学院" align="center" />
-				<el-table-column label="状态" width="80" align="center">
-					<template #default="scope">
-						<el-tag effect="plain" type="success" v-if="scope.row.type">
-							进
-						</el-tag>
-						<el-tag effect="plain" type="danger" v-else>出</el-tag>
-					</template>
-				</el-table-column>
+				<!-- 手机号 -->
 				<el-table-column
-					prop="time"
-					label="进出时间"
-					width="180"
+					prop="phone"
+					label="手机号"
 					align="center"
+					width="180"
 				/>
-				<el-table-column prop="address" label="地点" align="center" />
-				<el-table-column label="操作" align="center" width="120px">
+				<!-- 密码 -->
+				<el-table-column
+					prop="password"
+					label="密码"
+					align="center"
+					width="180"
+				/>
+				<!-- 班级 -->
+				<el-table-column prop="class" label="班级" align="center" width="180" />
+				<!-- 学院 -->
+				<el-table-column
+					prop="college"
+					label="学院"
+					align="center"
+					width="180"
+				/>
+				<!-- 操作 -->
+				<el-table-column
+					label="操作"
+					fixed="right"
+					align="center"
+					width="180px"
+				>
 					<template #default="scope">
 						<div class="perate">
 							<el-button
@@ -161,9 +126,7 @@
 </template>
 
 <script setup lang="ts">
-import { Edit, Delete, Search, CirclePlusFilled } from '@element-plus/icons-vue'
-import classData from '@/data/class'
-import collegeData from '@/data/college'
+import { Edit, Delete, Search } from '@element-plus/icons-vue'
 import type { FormInstance } from 'element-plus'
 
 /**
@@ -175,11 +138,7 @@ const searchFormRef = ref<FormInstance>()
  */
 const searchForm = reactive({
 	name: '',
-	class: '',
-	college: '',
-	type: 1,
-	date: '',
-	address: ''
+	stuNumber: ''
 })
 
 /**
@@ -201,21 +160,19 @@ const tableData = [
 		number: '111111111111',
 		name: '阿里木.买买提.伊莉娜.娜扎特',
 		gender: '男',
+		phone: '1111111111',
+		password: '1123121fdcwcdwxs',
 		class: '222222222222',
-		college: '11111111',
-		type: true,
-		time: '2023-04-24 15:32:46',
-		address: '1111111'
+		college: '11111111'
 	},
 	{
 		number: '111111111111',
 		name: 'Tom',
 		gender: '女',
+		phone: '1111111111',
+		password: '1123121fdcwcdwxs',
 		class: '222222222222',
-		college: '11111111',
-		type: false,
-		time: '2023-04-24 8:32:46',
-		address: '1111111'
+		college: '11111111'
 	}
 ]
 
