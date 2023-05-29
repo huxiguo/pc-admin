@@ -1,30 +1,37 @@
 import { defineStore } from 'pinia'
 import piniaPersistConfig from '@/config/piniaPersist'
-import { myTest } from '@/api/modules/login'
-
+import type { Login, User } from '@/api/interface'
+import { loginApi } from '@/api/modules/login'
+import { getUserInfo, getUserMenu } from '@/api/modules/user'
 export const useUserStore = defineStore(
 	'user',
 	() => {
 		const token = ref('')
-		const userInfo = ref({ name: 'xxxxxxxxx' })
-		// Set Token
-		function setToken(userToken: string) {
-			token.value = userToken
+		const userInfo = ref<User.ResUserInfo>({})
+		const userMenu = ref<User.ResUserMenu[]>([])
+		// login
+		async function adminLogin(params: Login.ReqLoginForm) {
+			const data = await loginApi(params)
+			token.value = data.result.token
+			return data
 		}
-		// Set setUserInfo
-		function setUserInfo(info: any) {
-			userInfo.value = info
+		// userInfo
+		async function getUserInfoAction() {
+			const data = await getUserInfo()
+			userInfo.value = data.result
 		}
-		async function getTestData() {
-			const data = await myTest()
-			console.log('data', data)
+		// userMenu
+		async function getUserMenuAction() {
+			const data = await getUserMenu()
+			userMenu.value = data.result
 		}
 		return {
 			token,
 			userInfo,
-			setToken,
-			setUserInfo,
-			getTestData
+			userMenu,
+			adminLogin,
+			getUserInfoAction,
+			getUserMenuAction
 		}
 	},
 	{

@@ -1,7 +1,7 @@
 <template>
 	<el-dropdown trigger="click">
 		<div class="avatar">
-			<img src="@/assets/images/avatar.gif" alt="avatar" />
+			<img :src="userInfo.avatar" alt="avatar" />
 		</div>
 		<template #dropdown>
 			<el-dropdown-menu>
@@ -18,7 +18,7 @@
 		</template>
 	</el-dropdown>
 	<!-- infoDialog -->
-	<InfoDialog ref="infoRef"></InfoDialog>
+	<InfoDialog ref="infoRef" :info="userInfo"></InfoDialog>
 	<!-- passwordDialog -->
 	<PasswordDialog ref="passwordRef"></PasswordDialog>
 </template>
@@ -28,9 +28,11 @@ import { useUserStore } from '@/stores/modules/user'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import InfoDialog from './InfoDialog.vue'
 import PasswordDialog from './PasswordDialog.vue'
+import { logoutApi } from '@/api/modules/login'
 
 const router = useRouter()
 const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 // 退出登录
 const logout = () => {
@@ -40,10 +42,9 @@ const logout = () => {
 		type: 'warning'
 	}).then(async () => {
 		// 1.执行退出登录接口
-		// await logoutApi()
-
+		await logoutApi()
 		// 2.清除 Token
-		userStore.setToken('')
+		userStore.token = ''
 
 		// 3.重定向到登陆页
 		router.replace('/login')

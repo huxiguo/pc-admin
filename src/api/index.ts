@@ -41,13 +41,16 @@ class RequestHttp {
 		 */
 		this.service.interceptors.request.use(
 			(config: CustomAxiosRequestConfig) => {
-				// const userStore = useUserStore()
+				const userStore = useUserStore()
 				// 当前请求不需要显示 loading，在 api 服务中通过指定的第三个参数: { noLoading: true } 来控制
 				config.noLoading || showFullScreenLoading()
+				// 登录成功后设置token
+				if (userStore.token) {
+					config.headers['Token'] = userStore.token
+				}
 				// if (config.headers && typeof config.headers.set === 'function') {
 				// 	config.headers.set('banaer', userStore.token)
 				// }
-				console.log('first', config.headers)
 				return config
 			},
 			(error: AxiosError) => {
@@ -66,14 +69,14 @@ class RequestHttp {
 				tryHideFullScreenLoading()
 				// 登陆失效
 				if (data.code == ResultEnum.OVERDUE) {
-					userStore.setToken('')
+					userStore.token = ''
 					router.replace('/login')
-					ElMessage.error(data.msg)
+					ElMessage.error(data.message)
 					return Promise.reject(data)
 				}
 				// 全局错误信息拦截（防止下载文件的时候返回数据流，没有 code 直接报错）
 				if (data.code && data.code !== ResultEnum.SUCCESS) {
-					ElMessage.error(data.msg)
+					ElMessage.error(data.message)
 					return Promise.reject(data)
 				}
 				// 成功请求（在页面上除非特殊情况，否则不用处理失败逻辑）
@@ -119,5 +122,4 @@ class RequestHttp {
 		return this.service.post(url, params, { ..._object, responseType: 'blob' })
 	}
 }
-
 export default new RequestHttp(config)

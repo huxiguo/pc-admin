@@ -1,99 +1,14 @@
-import NProgress from '@/config/nprogress'
-import { useUserStore } from '@/stores/modules/user'
 import { createRouter, createWebHashHistory } from 'vue-router'
+import { useUserStore } from '@/stores/modules/user'
+import { useAuthStore } from '@/stores/modules/auth'
+import { LOGIN_URL, ROUTER_WHITE_LIST } from '@/config'
+import { initDynamicRouter } from '@/router/modules/dynamicRouter'
+import { staticRouter, errorRouter } from '@/router/modules/staticRouter'
+import NProgress from '@/config/nprogress'
 
 const router = createRouter({
 	history: createWebHashHistory(),
-	routes: [
-		{
-			path: '/',
-			redirect: '/main'
-		},
-		{
-			path: '/login',
-			meta: {
-				title: '登录'
-			},
-			component: () => import('@/views/login/index.vue')
-		},
-		{
-			path: '/main',
-			meta: {
-				title: '首页'
-			},
-			component: () => import('@/views/main/Main.vue'),
-			children: [
-				{
-					path: '/main',
-					redirect: '/main/index'
-				},
-				{
-					path: '/main/index',
-					meta: {
-						title: '首页'
-					},
-					component: () => import('@/views/index/index.vue')
-				},
-				{
-					path: '/main/user',
-					meta: {
-						title: '用户管理'
-					},
-					component: () => import('@/views/user/index.vue')
-				},
-				{
-					path: '/main/record',
-					meta: {
-						title: '打卡记录'
-					},
-					component: () => import('@/views/record/index.vue')
-				},
-				{
-					path: '/main/class',
-					meta: {
-						title: '班级管理'
-					},
-					component: () => import('@/views/class/index.vue')
-				},
-				{
-					path: '/main/college',
-					meta: {
-						title: '院系管理'
-					},
-					component: () => import('@/views/college/index.vue')
-				}
-			]
-		},
-		{
-			path: '/403',
-			name: '403',
-			component: () => import('@/components/ErrorMessage/403.vue'),
-			meta: {
-				title: '403页面'
-			}
-		},
-		{
-			path: '/404',
-			name: '404',
-			component: () => import('@/components/ErrorMessage/404.vue'),
-			meta: {
-				title: '404页面'
-			}
-		},
-		{
-			path: '/500',
-			name: '500',
-			component: () => import('@/components/ErrorMessage/500.vue'),
-			meta: {
-				title: '500页面'
-			}
-		},
-		// Resolve refresh page, route warnings
-		{
-			path: '/:pathMatch(.*)*',
-			component: () => import('@/components/ErrorMessage/404.vue')
-		}
-	],
+	routes: [...staticRouter, ...errorRouter],
 	strict: false,
 	scrollBehavior: () => ({ left: 0, top: 0 })
 })
@@ -103,28 +18,51 @@ const router = createRouter({
  * */
 router.beforeEach(async (to, from, next) => {
 	const userStore = useUserStore()
+	const authStore = useAuthStore()
 
 	// 1.NProgress 开始
 	NProgress.start()
 
 	// 2.动态设置标题
-	document.title = to.meta.title ? `${to.meta.title}` : 'Admin'
+	const title = import.meta.env.VITE_GLOB_APP_TITLE
+	document.title = to.meta.title ? `${to.meta.title} - ${title}` : title
 
 	// 3.判断是访问登陆页，有 Token 就在当前页面，没有 Token 重置路由到登陆页
-	if (to.path.toLocaleLowerCase() === '/login') {
+	if (to.path.toLocaleLowerCase() === LOGIN_URL) {
 		if (userStore.token) return next(from.fullPath)
-
+		resetRouter()
 		return next()
 	}
 
+	// 4.判断访问页面是否在路由白名单地址(静态路由)中，如果存在直接放行
+	if (ROUTER_WHITE_LIST.includes(to.path)) return next()
+
 	// 5.判断是否有 Token，没有重定向到 login 页面
-	if (!userStore.token) {
-		return next({ path: '/login', replace: true })
+	if (!userStore.token) return next({ path: LOGIN_URL, replace: true })
+
+	// 6.如果没有菜单列表，就重新请求菜单列表并添加动态路由
+	if (!authStore.authMenuListGet.length) {
+		await initDynamicRouter()
+		return next({ ...to, replace: true })
 	}
+
+	// 7.存储 routerName 做按钮权限筛选
+	authStore.setRouteName(to.name as string)
 
 	// 8.正常访问页面
 	next()
 })
+
+/**
+ * @description 重置路由
+ * */
+export const resetRouter = () => {
+	const authStore = useAuthStore()
+	authStore.flatMenuListGet.forEach(route => {
+		const { name } = route
+		if (name && router.hasRoute(name)) router.removeRoute(name)
+	})
+}
 
 /**
  * @description 路由跳转错误

@@ -6,11 +6,10 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from '@/stores/modules/user'
 import Avatar from './components/Avatar.vue'
-
+import { useUserStore } from '@/stores/modules/user'
 const userStore = useUserStore()
-const username = computed(() => userStore.userInfo.name)
+const username = computed(() => userStore.userInfo.username)
 </script>
 
 <style scoped lang="scss">
