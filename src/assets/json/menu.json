@@ -1,0 +1,89 @@
+[
+	{
+		"path": null,
+		"icon": "Discount",
+		"title": "个人中心",
+		"children": [
+			{
+				"path": "/per/personinfo",
+				"icon": "User",
+				"title": "个人信息"
+			}
+		]
+	},
+	{
+		"path": null,
+		"icon": "User",
+		"title": "用户管理",
+		"children": [
+			{
+				"path": "/user/userinfo",
+				"icon": "UserFilled",
+				"title": "用户信息"
+			},
+			{
+				"path": "/user/accessrecord",
+				"icon": "Coordinate",
+				"title": "用户出入信息"
+			}
+		]
+	},
+	{
+		"path": null,
+		"icon": "Chicken",
+		"title": "设备管理",
+		"children": [
+			{
+				"path": "/dev/devicerun",
+				"icon": "Link",
+				"title": "设备连接"
+			},
+			{
+				"path": "/dev/deviceinfo",
+				"icon": "InfoFilled",
+				"title": "设备信息"
+			}
+		]
+	},
+	{
+		"path": null,
+		"icon": "View",
+		"title": "监视人管理",
+		"children": [
+			{
+				"path": "/vie/viewerinfo",
+				"icon": "Document",
+				"title": "监视人信息"
+			}
+		]
+	},
+	{
+		"path": null,
+		"icon": "KnifeFork",
+		"title": "单位管理",
+		"children": [
+			{
+				"path": "/uni/unitsinfo",
+				"icon": "Document",
+				"title": "单位信息"
+			}
+		]
+	},
+	{
+		"path": null,
+		"icon": "Coin",
+		"title": "管理员管理",
+		"children": [
+			{
+				"path": "/adm/admininfo",
+				"icon": "Document",
+				"title": "管理员信息"
+			},
+			{
+				"path": "/adm/menuinfo",
+				"icon": "CollectionTag",
+				"title": "权限管理"
+			}
+		]
+	}
+]

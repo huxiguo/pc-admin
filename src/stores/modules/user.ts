@@ -3,12 +3,14 @@ import piniaPersistConfig from '@/config/piniaPersist'
 import type { Login, User } from '@/api/interface'
 import { loginApi } from '@/api/modules/login'
 import { getUserInfo, getUserMenu } from '@/api/modules/user'
+import { getFlatMenuList } from '@/utils/index'
 export const useUserStore = defineStore(
 	'user',
 	() => {
 		const token = ref('')
 		const userInfo = ref<User.ResUserInfo>({})
 		const userMenu = ref<User.ResUserMenu[]>([])
+		const flatUserMenu = computed(() => getFlatMenuList(userMenu.value))
 		// login
 		async function adminLogin(params: Login.ReqLoginForm) {
 			const data = await loginApi(params)
@@ -29,6 +31,7 @@ export const useUserStore = defineStore(
 			token,
 			userInfo,
 			userMenu,
+			flatUserMenu,
 			adminLogin,
 			getUserInfoAction,
 			getUserMenuAction

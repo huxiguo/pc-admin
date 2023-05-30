@@ -1,65 +1,60 @@
 <template>
-	<el-menu-item index="index">
-		<el-icon>
-			<Setting />
-		</el-icon>
-		<template #title>
-			<span class="sle">{{ '首页' }}</span>
-		</template>
-	</el-menu-item>
-	<el-menu-item index="user">
-		<el-icon>
-			<Setting />
-		</el-icon>
-		<template #title>
-			<span class="sle">{{ '用户管理' }}</span>
-		</template>
-	</el-menu-item>
-	<el-menu-item index="record">
-		<el-icon>
-			<Setting />
-		</el-icon>
-		<template #title>
-			<span class="sle">{{ '打卡记录' }}</span>
-		</template>
-	</el-menu-item>
-	<el-menu-item index="class">
-		<el-icon>
-			<Setting />
-		</el-icon>
-		<template #title>
-			<span class="sle">{{ '班级管理' }}</span>
-		</template>
-	</el-menu-item>
-	<el-menu-item index="college">
-		<el-icon>
-			<Setting />
-		</el-icon>
-		<template #title>
-			<span class="sle">{{ '院系管理' }}</span>
-		</template>
-	</el-menu-item>
+	<template v-for="subItem in menuList" :key="subItem.id">
+		<el-sub-menu v-if="subItem.children?.length" :index="subItem.id + ''">
+			<template #title>
+				<el-icon>
+					<component :is="Menu"></component>
+				</el-icon>
+				<span class="sle">{{ subItem.title }}</span>
+			</template>
+			<SubMenu :menuList="subItem.children" />
+		</el-sub-menu>
+		<el-menu-item v-else :index="subItem.path">
+			<el-icon>
+				<component :is="Menu"></component>
+			</el-icon>
+			<template #title>
+				<span class="sle">{{ subItem.title }}</span>
+			</template>
+		</el-menu-item>
+	</template>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+interface Props {
+	id?: number
+	name?: string
+	title?: string
+	path?: any
+	perms?: any
+	component?: any
+	icon?: any
+	createTime?: string
+	parentId?: any
+	status?: string
+	children?: Props[]
+}
+defineProps<{ menuList: Props[] }>()
+const Menu = 'Menu'
+</script>
 
 <style lang="scss">
 .el-sub-menu .el-sub-menu__title:hover {
 	color: #333333 !important;
-	background-color: #cccccc !important;
+	background-color: #e9f7ef !important;
 }
 .el-menu--collapse {
 	.is-active {
 		.el-sub-menu__title {
 			color: #27ae60 !important;
-			background-color: #101111 !important;
+			background-color: #e1ffee !important;
 		}
 	}
 }
 .el-menu-item {
 	&:hover {
 		color: #333333;
-		background-color: #cccccc !important;
+		background-color: #e9f7ef !important;
 	}
 	&.is-active {
 		color: #27ae60 !important;

@@ -1,3 +1,5 @@
+import type { User } from '@/api/interface'
+
 /**
  * @description 获取localStorage
  * @param {String} key Storage名称
@@ -88,4 +90,26 @@ export function getTimeState() {
 	if (hours >= 14 && hours <= 18) return `下午好 🌞`
 	if (hours >= 18 && hours <= 24) return `晚上好 🌛`
 	if (hours >= 0 && hours <= 6) return `凌晨好 🌛`
+}
+
+/**
+ * @description 使用递归扁平化菜单，方便添加动态路由
+ * @param {Array} menuList 菜单列表
+ * @returns {Array}
+ */
+export function getFlatMenuList(
+	menuList: User.ResUserMenu[]
+): User.ResUserMenu[] {
+	const flattenMenuList: User.ResUserMenu[] = []
+	const newMenuList: User.ResUserMenu[] = JSON.parse(JSON.stringify(menuList))
+	newMenuList.forEach(item => {
+		const { children, path, ...rest } = item
+		// 如果当前菜单有子菜单，则递归调用
+		if (children && children.length > 0) {
+			const childrenList = getFlatMenuList(children)
+			flattenMenuList.push(...childrenList)
+		}
+		flattenMenuList.push({ path, ...rest })
+	})
+	return flattenMenuList
 }

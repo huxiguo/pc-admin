@@ -1,12 +1,12 @@
 import type { RouteRecordRaw } from 'vue-router'
-
+import { HOME_URL } from '@/config'
 /**
  * staticRouter (静态路由)
  */
 export const staticRouter: RouteRecordRaw[] = [
 	{
 		path: '/',
-		redirect: '/home/index'
+		redirect: HOME_URL
 	},
 	{
 		path: '/login',
@@ -19,10 +19,20 @@ export const staticRouter: RouteRecordRaw[] = [
 	{
 		path: '/layout',
 		name: 'layout',
+		redirect: HOME_URL,
 		component: () => import('@/layouts/index.vue'),
-		// component: () => import("@/layouts/indexAsync.vue"),
-		redirect: '/home/index',
-		children: []
+		children: [
+			// 配置一个固定的首页
+			{
+				path: HOME_URL,
+				name: 'home',
+				component: () => import('@/views/Home/index.vue'),
+				meta: {
+					title: '首页',
+					icon: 'el-icon-s-home'
+				}
+			}
+		]
 	}
 ]
 

@@ -74,6 +74,7 @@ import { useUserStore } from '@/stores/modules/user'
 import { CircleClose, UserFilled } from '@element-plus/icons-vue'
 import type { ElForm } from 'element-plus'
 import { getTimeState } from '@/utils'
+import { initDynamicRouter } from '@/router/modules/dynamicRouter'
 const router = useRouter()
 const userStore = useUserStore()
 
@@ -114,10 +115,10 @@ const login = (formEl: FormInstance | undefined) => {
 			const data = await userStore.adminLogin(loginForm)
 			// 登录成功
 			if (data.success) {
+				// 添加动态路由
+				await initDynamicRouter()
 				// 获取用户信息
 				await userStore.getUserInfoAction()
-				// 获取用户操作菜单
-				await userStore.getUserMenuAction()
 				// 跳转到首页
 				router.push('/main')
 				ElNotification({
