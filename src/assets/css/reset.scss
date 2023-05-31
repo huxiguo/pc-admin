@@ -146,7 +146,7 @@ body,
 }
 /* box-sizing 兼容性写法 */
 * {
-	box-sizing: content-box;
-	-webkit-box-sizing: content-box;
-	-moz-box-sizing: content-box;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
 }

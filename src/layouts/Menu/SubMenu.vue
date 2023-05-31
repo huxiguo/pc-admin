@@ -1,9 +1,9 @@
 <template>
 	<template v-for="subItem in menuList" :key="subItem.id">
-		<el-sub-menu v-if="subItem.children?.length" :index="subItem.id + ''">
+		<el-sub-menu v-if="subItem.children?.length" :index="subItem.path">
 			<template #title>
 				<el-icon>
-					<component :is="Menu"></component>
+					<component :is="subItem.icon"></component>
 				</el-icon>
 				<span class="sle">{{ subItem.title }}</span>
 			</template>
@@ -11,7 +11,7 @@
 		</el-sub-menu>
 		<el-menu-item v-else :index="subItem.path">
 			<el-icon>
-				<component :is="Menu"></component>
+				<component :is="subItem.icon"></component>
 			</el-icon>
 			<template #title>
 				<span class="sle">{{ subItem.title }}</span>
@@ -35,7 +35,6 @@ interface Props {
 	children?: Props[]
 }
 defineProps<{ menuList: Props[] }>()
-const Menu = 'Menu'
 </script>
 
 <style lang="scss">

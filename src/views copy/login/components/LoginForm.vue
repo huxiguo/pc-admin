@@ -119,7 +119,7 @@ const login = (formEl: FormInstance | undefined) => {
 				// 获取用户操作菜单
 				await userStore.getUserMenuAction()
 				// 跳转到首页
-				router.push('/main')
+				router.push('/main/index')
 				ElNotification({
 					title: getTimeState(),
 					message: '欢迎登录',

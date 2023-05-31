@@ -30,7 +30,7 @@
 						>
 							<el-menu-item index="/main/index">
 								<el-icon>
-									<component :is="HomeFilled"></component>
+									<component :is="Notification"></component>
 								</el-icon>
 								<template #title>
 									<span class="sle">首页</span>
@@ -55,7 +55,7 @@ import Main from '@/layouts/Main/index.vue'
 import SubMenu from '@/layouts/Menu/SubMenu.vue'
 import ToolBarLeft from '@/layouts/Header/ToolBarLeft.vue'
 import ToolBarRight from '@/layouts/Header/ToolBarRight.vue'
-const HomeFilled = 'HomeFilled'
+const Notification = 'Notification'
 const globalStore = useGlobalStore()
 const { isCollapse, activePath } = storeToRefs(globalStore)
 
