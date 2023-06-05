@@ -4,7 +4,7 @@
 		<div class="not-detail">
 			<h2>404</h2>
 			<h4>抱歉，您访问的页面不存在~🤷‍♂️🤷‍♀️</h4>
-			<el-button type="primary" @click="router.push('/main')"
+			<el-button type="primary" @click="router.push(backPath)"
 				>返回首页</el-button
 			>
 		</div>
@@ -12,7 +12,11 @@
 </template>
 
 <script setup lang="ts" name="404">
+import { HOME_URL } from '@/config'
 const router = useRouter()
+import { useGlobalStore } from '@/stores/modules/global'
+const globalStore = useGlobalStore()
+const backPath = globalStore.activePath || HOME_URL
 </script>
 
 <style scoped lang="scss">

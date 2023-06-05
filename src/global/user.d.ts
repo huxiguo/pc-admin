@@ -9,7 +9,18 @@ export namespace User {
 		endTime?: string
 		startTime?: string
 	}
-
+	// 所有用户信息
+	export interface ReqAllUserList {
+		name: string
+		role: string
+		schNo: string
+		unitsName: string
+	}
+	// 所有用户信息接口返回数据
+	export interface ResAllUserList {
+		doctorList: any[]
+		total: number
+	}
 	// 用户出入信息查询接口返回数据
 	export interface ResUserList {
 		total: number

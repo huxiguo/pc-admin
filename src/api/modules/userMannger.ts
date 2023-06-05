@@ -11,8 +11,18 @@ export const getUserInOutInfo = (
 ) => {
 	return http.post<User.ResUserList>(
 		`/access/getAccessRecord/${currentPage}/${pageSize}`,
-		{
-			params
-		}
+		params
+	)
+}
+
+// 获取所有用户信息
+export const getAllUserList = (
+	parmas: User.ReqAllUserList,
+	currentPage: number,
+	pageSize: number
+) => {
+	return http.post<User.ResAllUserList>(
+		`/user/getAllUserByPage/${currentPage}/${pageSize}`,
+		parmas
 	)
 }

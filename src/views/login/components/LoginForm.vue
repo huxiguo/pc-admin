@@ -71,13 +71,15 @@ import { throttle } from 'lodash'
 import type { Login } from '@/api/interface'
 import { ElMessage, ElNotification } from 'element-plus'
 import { useUserStore } from '@/stores/modules/user'
+import { useGlobalStore } from '@/stores/modules/global'
 import { CircleClose, UserFilled } from '@element-plus/icons-vue'
 import type { ElForm } from 'element-plus'
 import { getTimeState } from '@/utils'
 import { initDynamicRouter } from '@/router/modules/dynamicRouter'
+import { HOME_URL } from '@/config'
 const router = useRouter()
 const userStore = useUserStore()
-
+const globalStore = useGlobalStore()
 type FormInstance = InstanceType<typeof ElForm>
 const loginFormRef = ref<FormInstance>()
 const loginRules = reactive({
@@ -120,7 +122,7 @@ const login = (formEl: FormInstance | undefined) => {
 				// 获取用户信息
 				await userStore.getUserInfoAction()
 				// 跳转到首页
-				router.push('/main')
+				router.push(globalStore.activePath || HOME_URL)
 				ElNotification({
 					title: getTimeState(),
 					message: '欢迎登录',
