@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import piniaPersistConfig from '@/config/piniaPersist'
+import { HOME_URL } from '@/config'
 
 export const useGlobalStore = defineStore(
 	'global',
@@ -7,7 +8,7 @@ export const useGlobalStore = defineStore(
 		// 面包屑导航图标
 		const isCollapse = ref(true)
 		// 激活的menu
-		const activePath = ref('index')
+		const activePath = ref(HOME_URL)
 		/**
 		 * 切换侧边栏显示与隐藏
 		 * @param value 是否隐藏侧边栏
