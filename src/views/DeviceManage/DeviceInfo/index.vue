@@ -48,6 +48,10 @@ const handleResetBtnClick = () => {
 		status: ''
 	}
 }
+// 搜索栏搜索按钮回调
+const handleSearchBtnClick = () => {
+	deviceStore.getAllDeviceInfoAction(searchForm.value)
+}
 
 // 分页器数据
 const currentPage = ref(1)
@@ -109,8 +113,10 @@ const handleAddBtnClick = () => {
  */
 const handleEditBtnClick = (rowData: any) => {
 	dialogType.value = 'edit'
-	dialogForm.value = JSON.parse(JSON.stringify(rowData))
 	DialogVisible.value = true
+	nextTick(() => {
+		dialogForm.value = JSON.parse(JSON.stringify(rowData))
+	})
 }
 /*
  * 对话框关闭回调
@@ -148,7 +154,7 @@ const handleConfirmClick = () => {}
 			<el-form :model="searchForm" ref="searchFormRef">
 				<!-- 第一行 -->
 				<el-row :gutter="20" class="row-first">
-					<el-col :span="6">
+					<el-col :span="8">
 						<el-form-item label="设备ID:" prop="id">
 							<el-input
 								v-model:model-value="searchForm.id"
@@ -156,7 +162,7 @@ const handleConfirmClick = () => {}
 							/>
 						</el-form-item>
 					</el-col>
-					<el-col :span="6">
+					<el-col :span="8">
 						<el-form-item label="设备名称:" prop="name">
 							<el-input
 								v-model:model-value="searchForm.name"
@@ -164,7 +170,7 @@ const handleConfirmClick = () => {}
 							/>
 						</el-form-item>
 					</el-col>
-					<el-col :span="6">
+					<el-col :span="8">
 						<el-form-item label="端口号:" prop="m_nPort">
 							<el-input
 								v-model.number="searchForm.m_nPort"
@@ -172,7 +178,10 @@ const handleConfirmClick = () => {}
 							/>
 						</el-form-item>
 					</el-col>
-					<el-col :span="6">
+				</el-row>
+				<!-- 第二行 -->
+				<el-row :gutter="20">
+					<el-col :span="8">
 						<el-form-item label="IP地址:" prop="m_strIp">
 							<el-input
 								v-model:model-value="searchForm.m_strIp"
@@ -180,22 +189,7 @@ const handleConfirmClick = () => {}
 							/>
 						</el-form-item>
 					</el-col>
-				</el-row>
-				<!-- 第二行 -->
-				<el-row :gutter="20">
-					<el-col :span="6">
-						<el-form-item label="状态:" prop="status"
-							><el-select v-model="searchForm.status" placeholder="请选择状态">
-								<el-option
-									v-for="item in statusSelectData"
-									:key="item.value"
-									:label="item.label"
-									:value="item.value"
-								/>
-							</el-select>
-						</el-form-item>
-					</el-col>
-					<el-col :span="6">
+					<el-col :span="8">
 						<el-form-item label="类型:" prop="type"
 							><el-select v-model="searchForm.type" placeholder="请选择类型">
 								<el-option
@@ -207,9 +201,15 @@ const handleConfirmClick = () => {}
 							</el-select>
 						</el-form-item>
 					</el-col>
-					<el-col :span="12">
+					<el-col :span="8">
 						<div class="operation">
-							<el-button :icon="Search" class="searchBtn"> 查询 </el-button>
+							<el-button
+								:icon="Search"
+								class="searchBtn"
+								@click="handleSearchBtnClick"
+							>
+								查询
+							</el-button>
 							<el-button
 								:icon="Delete"
 								class="resetBtn"
