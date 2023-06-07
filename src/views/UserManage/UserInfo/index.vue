@@ -63,16 +63,11 @@
 			</el-form>
 		</div>
 		<div class="card table-main">
-			<el-table :data="tableData" border style="width: 100%">
+			<el-table :data="userList" border style="width: 100%">
 				<!-- 索引 -->
 				<el-table-column type="index" label="#" align="center" />
 				<!-- 学号 -->
-				<el-table-column
-					prop="number"
-					label="学号"
-					align="center"
-					width="180"
-				/>
+				<el-table-column prop="schNo" label="学号" align="center" width="180" />
 				<!-- 姓名 -->
 				<el-table-column
 					prop="name"
@@ -81,43 +76,41 @@
 					align="center"
 					width="100"
 				/>
-				<!-- 性别 -->
-				<el-table-column
-					prop="gender"
-					label="性别"
-					width="80px"
-					align="center"
-				/>
-				<!-- 手机号 -->
-				<el-table-column
-					prop="phone"
-					label="手机号"
-					align="center"
-					width="180"
-				/>
-				<!-- 密码 -->
-				<el-table-column
-					prop="password"
-					label="密码"
-					align="center"
-					width="180"
-				/>
+				<!-- 角色 -->
+				<el-table-column prop="name" label="角色" align="center" width="100">
+					<template #default="scope">
+						{{
+							scope.row.role === '0'
+								? '学生'
+								: scope.row.role === '1'
+								? '老师'
+								: '其他'
+						}}
+					</template>
+				</el-table-column>
+				<!-- 人脸照片 -->
+				<el-table-column prop="faceUrl" label="照片" align="center">
+					<template #default>
+						<!-- 一寸照片大小 -->
+						<el-image
+							style="width: 80px; height: 120px"
+							src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
+							fit="cover"
+						></el-image>
+					</template>
+				</el-table-column>
 				<!-- 班级 -->
-				<el-table-column prop="class" label="班级" align="center" width="180" />
-				<!-- 学院 -->
 				<el-table-column
-					prop="college"
-					label="学院"
+					prop="unitsName"
+					show-overflow-tooltip
+					label="班级"
 					align="center"
 					width="180"
 				/>
+				<!-- 届 -->
+				<el-table-column prop="session" label="届" align="center" width="180" />
 				<!-- 操作 -->
-				<el-table-column
-					label="操作"
-					fixed="right"
-					align="center"
-					width="180px"
-				>
+				<el-table-column label="操作" align="center" width="180px">
 					<template #default="scope">
 						<div class="perate">
 							<el-button
@@ -141,9 +134,9 @@
 			<el-pagination
 				v-model:current-page="currentPage"
 				v-model:page-size="pageSize"
-				:page-sizes="[10, 20, 30, 40]"
+				:page-sizes="[10, 50, 200, 500]"
 				layout="total, sizes, prev, pager, next, jumper"
-				:total="40"
+				:total="userTotal"
 				@size-change="handleSizeChange"
 				@current-change="handleCurrentChange"
 			/>
@@ -203,6 +196,11 @@ const userManngerStore = useUserManngerStore()
 const unitManngerStore = useUnitManngerStore()
 unitManngerStore.getUnitListAction()
 const { classList } = storeToRefs(unitManngerStore)
+const { userList, userTotal } = storeToRefs(userManngerStore)
+// 分页数据
+const currentPage = ref(1)
+const pageSize = ref(10)
+
 // 班级选项的配置
 const props = {
 	value: 'name',
@@ -232,39 +230,47 @@ const comSearchForm = computed(() => {
 		...params
 	}
 })
-userManngerStore.getAllUserListAction(comSearchForm.value)
+// 进入页面获取所有用户列表
+onMounted(() => {
+	userManngerStore.getAllUserListAction(comSearchForm.value)
+})
 /**
  * 查询按钮点击事件
  */
-const handleSearchBtnClick = () => {}
+const handleSearchBtnClick = () => {
+	userManngerStore.getAllUserListAction(comSearchForm.value)
+}
 /**
  * 重置按钮点击事件
  */
 const handleResetBtnClick = (formEl: FormInstance | undefined) => {
 	if (!formEl) return
 	formEl.resetFields()
+	userManngerStore.getAllUserListAction(comSearchForm.value)
 }
-// 模拟表格数据
-const tableData = [
-	{
-		number: '111111111111',
-		name: '阿里木.买买提.伊莉娜.娜扎特',
-		gender: '男',
-		phone: '1111111111',
-		password: '1123121fdcwcdwxs',
-		class: '222222222222',
-		college: '11111111'
-	},
-	{
-		number: '111111111111',
-		name: 'Tom',
-		gender: '女',
-		phone: '1111111111',
-		password: '1123121fdcwcdwxs',
-		class: '222222222222',
-		college: '11111111'
-	}
-]
+
+/**
+ * 分页大小改变回调
+ * @param a 新的分页大小
+ */
+const handleSizeChange = (pageSize: number) => {
+	userManngerStore.getAllUserListAction(
+		comSearchForm.value,
+		currentPage.value,
+		pageSize
+	)
+}
+/**
+ * 页码发生变化回调
+ * @param b 新的页码
+ */
+const handleCurrentChange = (currentPage: number) => {
+	userManngerStore.getAllUserListAction(
+		comSearchForm.value,
+		currentPage,
+		pageSize.value
+	)
+}
 
 /**
  * 是否显示编辑用户对话框
@@ -303,25 +309,6 @@ const handleEditBtnClick = (rowData: any) => {
  */
 const handleDeleteBtnClick = (rowData: any) => {
 	console.log('row', rowData.number)
-}
-
-// 分页数据
-const currentPage = ref(1)
-const pageSize = ref(10)
-
-/**
- * 分页大小改变回调
- * @param a 新的分页大小
- */
-const handleSizeChange = (pageSize: number) => {
-	console.log('first', pageSize)
-}
-/**
- * 页码发生变化回调
- * @param b 新的页码
- */
-const handleCurrentChange = (currentPage: number) => {
-	console.log('b', currentPage)
 }
 </script>
 
