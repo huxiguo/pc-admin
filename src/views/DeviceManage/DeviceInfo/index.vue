@@ -1,20 +1,51 @@
 <script setup lang="ts">
+import type { FormInstance, FormRules } from 'element-plus'
 import { Edit, Delete, Search } from '@element-plus/icons-vue'
-import { getAllDeviceList } from '@/api/modules/device'
+import { useDeviceStore } from '@/stores/modules/device'
 import type { searchForm, dialogForm } from './Interface/form'
+
+const deviceStore = useDeviceStore()
 
 // searchForm表单数据
 const searchForm = ref<searchForm>({
 	name: '',
-	m_nPort: '',
-	m_strIp: ''
+	m_strIp: '',
+	m_nPort: 37777,
+	id: '',
+	type: '',
+	status: ''
 })
+// 状态选择器数据
+const statusSelectData = ref([
+	{
+		value: '0',
+		label: '断开'
+	},
+	{
+		value: '1',
+		label: '连接'
+	}
+])
+// 类型选择器数据
+const typeSelectData = ref([
+	{
+		value: '0',
+		label: '出'
+	},
+	{
+		value: '1',
+		label: '进'
+	}
+])
 // 搜索栏重置按钮回调
 const handleResetBtnClick = () => {
 	searchForm.value = {
 		name: '',
-		m_nPort: '',
-		m_strIp: ''
+		m_nPort: 0,
+		m_strIp: '',
+		id: '',
+		type: '',
+		status: ''
 	}
 }
 
@@ -35,14 +66,20 @@ const handleCurrentChange = (newPage: number) => {
 	currentPage.value = newPage
 }
 
-// 表格数据
-const deviceList = ref([])
-// 获取表格数据
-getAllDeviceList({}, 1, 10).then(res => {
-	deviceList.value = res.result.deviceList
-	total.value = res.result.total
-})
+// 表单验证
+const ruleFormRef = ref<FormInstance>()
 
+// 获取表格数据
+if (typeof searchForm.value.m_nPort === 'string') {
+	const newParams = ref()
+	newParams.value = {
+		...searchForm.value,
+		m_nPort: Number(searchForm.value.m_nPort)
+	}
+	deviceStore.getAllDeviceInfoAction(newParams.value)
+}
+
+deviceStore.getAllDeviceInfoAction(searchForm.value)
 // 编辑框的类型（添加和编辑）
 const dialogType = ref('')
 /**
@@ -52,23 +89,13 @@ const DialogVisible = ref(false)
 // dialogForm表单数据
 const dialogForm = ref<dialogForm>({
 	name: '',
-	m_nPort: '',
+	m_nPort: 0,
 	m_strIp: '',
 	m_strUser: '',
 	m_strPassword: '',
-	status: ''
+	status: '',
+	type: '0'
 })
-// 状态选择器数据
-const statusSelectData = ref([
-	{
-		value: '0',
-		label: '断开'
-	},
-	{
-		value: '1',
-		label: '连接'
-	}
-])
 /*
  * 添加设备按钮回调
  */
@@ -82,23 +109,31 @@ const handleAddBtnClick = () => {
  */
 const handleEditBtnClick = (rowData: any) => {
 	dialogType.value = 'edit'
-	dialogForm.value = rowData
+	dialogForm.value = JSON.parse(JSON.stringify(rowData))
 	DialogVisible.value = true
 }
 /*
  * 对话框关闭回调
  */
+const test = ref()
 const handleEditClose = () => {
+	// setTimeout(() => {
 	dialogType.value = ''
+	nextTick(() => {
+		test.value.resetFields()
+	})
+	console.log(11111111)
+	// dialogForm.value = {
+	// 	name: '',
+	// 	m_nPort: 0,
+	// 	m_strIp: '',
+	// 	m_strUser: '',
+	// 	m_strPassword: '',
+	// 	status: '',
+	// 	type: '0'
+	// }
+	// }, 500)
 	DialogVisible.value = false
-	dialogForm.value = {
-		name: '',
-		m_nPort: '',
-		m_strIp: '',
-		m_strUser: '',
-		m_strPassword: '',
-		status: ''
-	}
 }
 /*
  * 对话框确认按钮回调
@@ -111,8 +146,17 @@ const handleConfirmClick = () => {}
 		<!-- 搜索表单 -->
 		<div class="card table-search">
 			<el-form :model="searchForm" ref="searchFormRef">
-				<el-row :gutter="20">
-					<el-col :span="5">
+				<!-- 第一行 -->
+				<el-row :gutter="20" class="row-first">
+					<el-col :span="6">
+						<el-form-item label="设备ID:" prop="id">
+							<el-input
+								v-model:model-value="searchForm.id"
+								placeholder="请输入设备ID"
+							/>
+						</el-form-item>
+					</el-col>
+					<el-col :span="6">
 						<el-form-item label="设备名称:" prop="name">
 							<el-input
 								v-model:model-value="searchForm.name"
@@ -120,15 +164,15 @@ const handleConfirmClick = () => {}
 							/>
 						</el-form-item>
 					</el-col>
-					<el-col :span="5">
+					<el-col :span="6">
 						<el-form-item label="端口号:" prop="m_nPort">
 							<el-input
-								v-model:model-value="searchForm.m_nPort"
+								v-model.number="searchForm.m_nPort"
 								placeholder="请输入端口号"
 							/>
 						</el-form-item>
 					</el-col>
-					<el-col :span="5">
+					<el-col :span="6">
 						<el-form-item label="IP地址:" prop="m_strIp">
 							<el-input
 								v-model:model-value="searchForm.m_strIp"
@@ -136,7 +180,34 @@ const handleConfirmClick = () => {}
 							/>
 						</el-form-item>
 					</el-col>
-					<el-col :span="4">
+				</el-row>
+				<!-- 第二行 -->
+				<el-row :gutter="20">
+					<el-col :span="6">
+						<el-form-item label="状态:" prop="status"
+							><el-select v-model="searchForm.status" placeholder="请选择状态">
+								<el-option
+									v-for="item in statusSelectData"
+									:key="item.value"
+									:label="item.label"
+									:value="item.value"
+								/>
+							</el-select>
+						</el-form-item>
+					</el-col>
+					<el-col :span="6">
+						<el-form-item label="类型:" prop="type"
+							><el-select v-model="searchForm.type" placeholder="请选择类型">
+								<el-option
+									v-for="item in typeSelectData"
+									:key="item.value"
+									:label="item.label"
+									:value="item.value"
+								/>
+							</el-select>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
 						<div class="operation">
 							<el-button :icon="Search" class="searchBtn"> 查询 </el-button>
 							<el-button
@@ -146,17 +217,15 @@ const handleConfirmClick = () => {}
 							>
 								重置
 							</el-button>
+							<el-button @click="handleAddBtnClick">添加设备</el-button>
 						</div>
-					</el-col>
-					<el-col :span="1">
-						<el-button @click="handleAddBtnClick">添加设备</el-button>
-					</el-col>
-				</el-row>
+					</el-col></el-row
+				>
 			</el-form>
 		</div>
 		<!-- 数据表格 -->
 		<div class="card table-main">
-			<el-table :data="deviceList" border style="width: 100%">
+			<el-table :data="deviceStore.deviceList" border style="width: 100%">
 				<!-- 索引 -->
 				<el-table-column type="index" label="#" width="180" align="center" />
 				<!-- 设备名称 -->
@@ -189,12 +258,7 @@ const handleConfirmClick = () => {}
 					</template>
 				</el-table-column>
 				<!-- 操作 -->
-				<el-table-column
-					label="操作"
-					fixed="right"
-					align="center"
-					width="180px"
-				>
+				<el-table-column label="操作" align="center" width="180px">
 					<template #default="scope">
 						<div class="perate">
 							<el-button
@@ -227,9 +291,14 @@ const handleConfirmClick = () => {}
 			:title="dialogType === 'add' ? '添加设备' : '编辑设备'"
 			width="43%"
 			center
-			@close="handleEditClose"
+			@closed="handleEditClose"
 		>
-			<el-form :model="dialogForm" label-position="left" label-width="85px">
+			<el-form
+				:model="dialogForm"
+				label-position="left"
+				label-width="85px"
+				ref="test"
+			>
 				<el-form-item label="设备名称：" prop="name">
 					<el-input v-model="dialogForm.name" />
 				</el-form-item>
@@ -245,19 +314,20 @@ const handleConfirmClick = () => {}
 				<el-form-item label="密码：" prop="m_strPassword">
 					<el-input v-model="dialogForm.m_strPassword" />
 				</el-form-item>
-				<el-form-item label="状态：" prop="status">
-					<el-select
-						v-model="dialogForm.status"
-						class="m-2"
-						placeholder="Select"
-					>
-						<el-option
-							v-for="item in statusSelectData"
-							:key="item.value"
-							:label="item.label"
-							:value="item.value"
-						/>
-					</el-select>
+				<el-form-item label="类型：" prop="status">
+					<el-switch
+						v-model="dialogForm.type"
+						class="ml-2"
+						inline-prompt
+						style="
+							--el-switch-on-color: #13ce66;
+							--el-switch-off-color: #ff4949;
+						"
+						active-text="进"
+						inactive-text="出"
+						active-value="1"
+						inactive-value="0"
+					/>
 				</el-form-item>
 			</el-form>
 			<template #footer>
