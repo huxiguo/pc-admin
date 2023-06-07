@@ -18,5 +18,6 @@ module.exports = {
 	rules: {
 		'vue/multi-word-component-names': 'off',
 		'arrow-parens': ['error', 'as-needed']
-	}
+	},
+	'linebreak-style': [0, 'error', 'windows']
 }
