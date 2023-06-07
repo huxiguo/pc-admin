@@ -146,7 +146,7 @@
 			class="dialogBox"
 			v-model:model-value="editDialogVisible"
 			title="编辑用户"
-			width="30%"
+			:width="500"
 			center
 		>
 			<el-form :model="dialogForm" label-position="left" label-width="70px">

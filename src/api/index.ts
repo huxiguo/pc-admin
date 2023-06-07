@@ -116,7 +116,7 @@ class RequestHttp {
 		return this.service.put(url, params, _object)
 	}
 	delete<T>(url: string, params?: any, _object = {}): Promise<ResultData<T>> {
-		return this.service.delete(url, { params, ..._object })
+		return this.service.delete(url, { data: params, ..._object })
 	}
 	download(url: string, params?: object, _object = {}): Promise<BlobPart> {
 		return this.service.post(url, params, { ..._object, responseType: 'blob' })

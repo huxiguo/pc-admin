@@ -27,18 +27,15 @@ export const useDeviceStore = defineStore(
 		}
 		// 添加设备
 		async function addDeviceAction(params: Device.ReqAddDevice) {
-			const { code } = await addDevice(params)
-			return code
+			await addDevice(params)
 		}
 		// 编辑设备
 		async function editDeviceAction(params: Device.ReqEditDevice) {
-			const { code } = await editDevice(params)
-			return code
+			await editDevice(params)
 		}
 		// 删除设备
 		async function delDeviceAction(params: any) {
-			const { code } = await delDevice(params)
-			return code
+			await delDevice(params)
 		}
 		return {
 			total,

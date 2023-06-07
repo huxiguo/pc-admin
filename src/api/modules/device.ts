@@ -1,6 +1,5 @@
 import http from '@/api'
 import type { Device } from '@/global/device.d'
-import qs from 'qs'
 
 // 获取所有设备信息
 export const getAllDeviceInfo = (
@@ -26,5 +25,5 @@ export const editDevice = (params: Device.ReqEditDevice) => {
 
 // 删除设备
 export const delDevice = (params: any) => {
-	return http.delete<any>('/device/delDevice', { params })
+	return http.delete<any>('/device/delDevice', params)
 }

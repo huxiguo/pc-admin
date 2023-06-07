@@ -7,6 +7,7 @@ import { ElMessage } from 'element-plus'
 
 const deviceStore = useDeviceStore()
 
+const searchFormRef = ref<FormInstance>()
 // searchForm表单数据
 const searchForm = ref<searchForm>({
 	name: '',
@@ -40,14 +41,12 @@ const typeSelectData = ref([
 ])
 // 搜索栏重置按钮回调
 const handleResetBtnClick = () => {
-	searchForm.value = {
-		name: '',
-		m_nPort: 0,
-		m_strIp: '',
-		id: '',
-		type: '',
-		status: ''
-	}
+	searchFormRef.value?.resetFields()
+	deviceStore.getAllDeviceInfoAction(
+		searchForm.value,
+		currentPage.value,
+		pageSize.value
+	)
 }
 // 搜索栏搜索按钮回调
 const handleSearchBtnClick = () => {
@@ -66,24 +65,30 @@ const pageSize = ref(10)
  * 分页大小改变回调
  */
 const handleSizeChange = (newSize: number) => {
-	pageSize.value = newSize
+	deviceStore.getAllDeviceInfoAction(
+		searchForm.value,
+		currentPage.value,
+		newSize
+	)
 }
 /*
  * 页码改变回调
  */
 const handleCurrentChange = (newPage: number) => {
-	currentPage.value = newPage
+	deviceStore.getAllDeviceInfoAction(searchForm.value, newPage, pageSize.value)
 }
 
 // 表单验证
 const ruleFormRef = ref<FormInstance>()
 
 // 获取表格数据
-deviceStore.getAllDeviceInfoAction(
-	searchForm.value,
-	currentPage.value,
-	pageSize.value
-)
+onActivated(() => {
+	deviceStore.getAllDeviceInfoAction(
+		searchForm.value,
+		currentPage.value,
+		pageSize.value
+	)
+})
 // 编辑框的类型（添加和编辑）
 const dialogType = ref('')
 /**
@@ -120,67 +125,59 @@ const handleEditBtnClick = (rowData: any) => {
 	})
 }
 // 表格删除按钮回调
-const handleDeleteBtnClick = async (id: string) => {
+const handleDeleteBtnClick = (id: string) => {
 	let arr = []
 	arr.push(id)
-	const code = await deviceStore.delDeviceAction(arr)
-	if (code === 200) {
-		ElMessage({
-			message: '删除成功',
-			type: 'success'
-		})
-		deviceStore.getAllDeviceInfoAction(
-			searchForm.value,
-			currentPage.value,
-			pageSize.value
-		)
-	}
+	deviceStore.delDeviceAction(arr)
+	ElMessage({
+		message: '删除成功',
+		type: 'success'
+	})
+	deviceStore.getAllDeviceInfoAction(
+		searchForm.value,
+		currentPage.value,
+		pageSize.value
+	)
 }
+const dialogFormRef = ref()
 /*
  * 对话框关闭回调
  */
-const dialogFormRef = ref()
 const handleEditClose = () => {
 	dialogType.value = ''
-	nextTick(() => {
-		dialogFormRef.value.resetFields()
-	})
+	dialogFormRef.value.resetFields()
 	DialogVisible.value = false
 }
 /*
  * 对话框确认按钮回调
  */
-const handleConfirmClick = async () => {
+const handleConfirmClick = () => {
 	if (dialogType.value === 'add') {
-		const code = await deviceStore.addDeviceAction(dialogForm.value)
-		if (code == 200) {
-			DialogVisible.value = false
-			dialogFormRef.value.resetFields()
-			deviceStore.getAllDeviceInfoAction(
-				searchForm.value,
-				currentPage.value,
-				pageSize.value
-			)
-			ElMessage({
-				message: '添加成功',
-				type: 'success'
-			})
-		}
+		deviceStore.addDeviceAction(dialogForm.value)
+		DialogVisible.value = false
+		dialogFormRef.value.resetFields()
+		deviceStore.getAllDeviceInfoAction(
+			searchForm.value,
+			currentPage.value,
+			pageSize.value
+		)
+		ElMessage({
+			message: '添加成功',
+			type: 'success'
+		})
 	} else {
-		const code = await deviceStore.editDeviceAction(dialogForm.value)
-		if (code == 200) {
-			DialogVisible.value = false
-			dialogFormRef.value.resetFields()
-			deviceStore.getAllDeviceInfoAction(
-				searchForm.value,
-				currentPage.value,
-				pageSize.value
-			)
-			ElMessage({
-				message: '编辑成功',
-				type: 'success'
-			})
-		}
+		deviceStore.editDeviceAction(dialogForm.value)
+		DialogVisible.value = false
+		dialogFormRef.value.resetFields()
+		deviceStore.getAllDeviceInfoAction(
+			searchForm.value,
+			currentPage.value,
+			pageSize.value
+		)
+		ElMessage({
+			message: '编辑成功',
+			type: 'success'
+		})
 	}
 }
 </script>
@@ -362,7 +359,7 @@ const handleConfirmClick = async () => {
 			class="dialogBox"
 			:model-value="DialogVisible"
 			:title="dialogType === 'add' ? '添加设备' : '编辑设备'"
-			width="43%"
+			:width="500"
 			center
 			@closed="handleEditClose"
 		>
