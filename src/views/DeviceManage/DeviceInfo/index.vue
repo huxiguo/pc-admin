@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormInstance, FormRules } from 'element-plus'
+import type { FormRules } from 'element-plus'
 import { Edit, Delete, Search } from '@element-plus/icons-vue'
 import { useDeviceStore } from '@/stores/modules/device'
 import type { searchForm, dialogForm } from './Interface/form'
@@ -75,8 +75,15 @@ const handleCurrentChange = (newPage: number) => {
 	currentPage.value = newPage
 }
 
-// 表单验证
-const ruleFormRef = ref<FormInstance>()
+// 表单校验
+const rules = reactive<FormRules>({
+	id: [{ required: true, message: '请输入设备ID', trigger: 'blur' }],
+	m_nPort: [{ required: true, message: '请输入端口号', trigger: 'blur' }],
+	m_strIp: [{ required: true, message: '请输入IP地址', trigger: 'blur' }],
+	m_strPassword: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+	m_strUser: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+	name: [{ required: true, message: '请输入设备名称', trigger: 'blur' }]
+})
 
 // 获取表格数据
 deviceStore.getAllDeviceInfoAction(
@@ -124,17 +131,15 @@ const handleDeleteBtnClick = async (id: string) => {
 	let arr = []
 	arr.push(id)
 	const code = await deviceStore.delDeviceAction(arr)
-	if (code === 200) {
-		ElMessage({
-			message: '删除成功',
-			type: 'success'
-		})
-		deviceStore.getAllDeviceInfoAction(
-			searchForm.value,
-			currentPage.value,
-			pageSize.value
-		)
-	}
+	ElMessage({
+		message: '删除成功',
+		type: 'success'
+	})
+	deviceStore.getAllDeviceInfoAction(
+		searchForm.value,
+		currentPage.value,
+		pageSize.value
+	)
 }
 /*
  * 对话框关闭回调
@@ -153,34 +158,30 @@ const handleEditClose = () => {
 const handleConfirmClick = async () => {
 	if (dialogType.value === 'add') {
 		const code = await deviceStore.addDeviceAction(dialogForm.value)
-		if (code == 200) {
-			DialogVisible.value = false
-			dialogFormRef.value.resetFields()
-			deviceStore.getAllDeviceInfoAction(
-				searchForm.value,
-				currentPage.value,
-				pageSize.value
-			)
-			ElMessage({
-				message: '添加成功',
-				type: 'success'
-			})
-		}
+		DialogVisible.value = false
+		dialogFormRef.value.resetFields()
+		deviceStore.getAllDeviceInfoAction(
+			searchForm.value,
+			currentPage.value,
+			pageSize.value
+		)
+		ElMessage({
+			message: '添加成功',
+			type: 'success'
+		})
 	} else {
 		const code = await deviceStore.editDeviceAction(dialogForm.value)
-		if (code == 200) {
-			DialogVisible.value = false
-			dialogFormRef.value.resetFields()
-			deviceStore.getAllDeviceInfoAction(
-				searchForm.value,
-				currentPage.value,
-				pageSize.value
-			)
-			ElMessage({
-				message: '编辑成功',
-				type: 'success'
-			})
-		}
+		DialogVisible.value = false
+		dialogFormRef.value.resetFields()
+		deviceStore.getAllDeviceInfoAction(
+			searchForm.value,
+			currentPage.value,
+			pageSize.value
+		)
+		ElMessage({
+			message: '编辑成功',
+			type: 'success'
+		})
 	}
 }
 </script>
@@ -369,8 +370,9 @@ const handleConfirmClick = async () => {
 			<el-form
 				:model="dialogForm"
 				label-position="left"
-				label-width="85px"
+				label-width="95px"
 				ref="dialogFormRef"
+				:rules="rules"
 			>
 				<el-form-item label="设备ID：" prop="id" v-show="dialogType !== 'edit'">
 					<el-input v-model="dialogForm.id" placeholder="请输入设备ID" />
