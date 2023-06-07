@@ -14,4 +14,27 @@ export namespace Device {
 		deviceList: any[]
 		total: number
 	}
+
+	// 添加设备请求参数
+	export interface ReqAddDevice {
+		id: string
+		m_nPort: number
+		m_strIp: string
+		m_strPassword: string
+		m_strUser: string
+		name: string
+		type: string
+	}
+
+	// 添加设备请求参数
+	export interface ReqEditDevice {
+		m_nPort: number
+		m_strIp: string
+		m_strPassword: string
+		m_strUser: string
+		name: string
+		type: string
+	}
+	// 删除设备请求参数
+	export type ReqDelDevice = string[]
 }
