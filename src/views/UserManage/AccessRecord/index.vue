@@ -255,22 +255,22 @@ const comSearchForm = computed(() => {
 	}
 })
 // 首次进入页面时，获取数据
-onMounted(() => {
-	userMannger.getUserInOutListAction(comSearchForm.value)
+onMounted(async () => {
+	await userMannger.getUserInOutListAction(comSearchForm.value)
 })
 /**
  * 查询按钮点击事件
  */
-const handleSearchBtnClick = () => {
-	userMannger.getUserInOutListAction(comSearchForm.value)
+const handleSearchBtnClick = async () => {
+	await userMannger.getUserInOutListAction(comSearchForm.value)
 }
 /**
  * 重置按钮点击事件
  */
-const handleResetBtnClick = (formEl: FormInstance | undefined) => {
+const handleResetBtnClick = async (formEl: FormInstance | undefined) => {
 	if (!formEl) return
 	formEl.resetFields()
-	userMannger.getUserInOutListAction(comSearchForm.value)
+	await userMannger.getUserInOutListAction(comSearchForm.value)
 }
 // 分页数据
 const currentPage = ref(1)
@@ -280,8 +280,8 @@ const pageSize = ref(10)
  * 分页大小改变回调
  * @param a 新的分页大小
  */
-const handleSizeChange = (pageSize: number) => {
-	userMannger.getUserInOutListAction(
+const handleSizeChange = async (pageSize: number) => {
+	await userMannger.getUserInOutListAction(
 		comSearchForm.value,
 		currentPage.value,
 		pageSize
@@ -291,8 +291,8 @@ const handleSizeChange = (pageSize: number) => {
  * 页码发生变化回调
  * @param b 新的页码
  */
-const handleCurrentChange = (currentPage: number) => {
-	userMannger.getUserInOutListAction(
+const handleCurrentChange = async (currentPage: number) => {
+	await userMannger.getUserInOutListAction(
 		comSearchForm.value,
 		currentPage,
 		pageSize.value

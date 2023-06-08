@@ -10,6 +10,7 @@
 							<el-input
 								v-model:model-value="searchForm.name"
 								placeholder="请输入姓名"
+								clearable
 							/>
 						</el-form-item>
 					</el-col>
@@ -18,11 +19,12 @@
 							<el-input
 								v-model:model-value="searchForm.schNo"
 								placeholder="请输入学号"
+								clearable
 							/>
 						</el-form-item>
 					</el-col>
 					<el-col :span="5">
-						<el-form-item label="班级:" prop="unitsName">
+						<el-form-item label="班级:" prop="className">
 							<el-cascader
 								v-model="searchForm.className"
 								:options="classList"
@@ -94,8 +96,14 @@
 						<!-- 一寸照片大小 -->
 						<el-image
 							style="width: 80px; height: 120px"
-							src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
+							:src="imgUrl"
+							:preview-src-list="srcList"
 							fit="cover"
+							hide-on-click-modal
+							close-on-press-escape
+							preview-teleported
+							:z-index="9999"
+							@click="handleImgClick(imgUrl)"
 						></el-image>
 					</template>
 				</el-table-column>
@@ -105,10 +113,9 @@
 					show-overflow-tooltip
 					label="班级"
 					align="center"
-					width="180"
 				/>
 				<!-- 届 -->
-				<el-table-column prop="session" label="届" align="center" width="180" />
+				<el-table-column prop="session" label="届" align="center" width="80" />
 				<!-- 操作 -->
 				<el-table-column label="操作" align="center" width="180px">
 					<template #default="scope">
@@ -118,7 +125,14 @@
 								type="primary"
 								:icon="Edit"
 								@click="handleEditBtnClick(scope.row)"
-								>编辑</el-button
+								>编辑信息</el-button
+							>
+							<el-button
+								text
+								type="primary"
+								:icon="Edit"
+								@click="handleEditBtnClick(scope.row)"
+								>更改照片</el-button
 							>
 							<el-button
 								text
@@ -191,12 +205,26 @@ import type { DialogForm } from './Interface/dialogForm'
 import { useUnitManngerStore } from '@/stores/modules/unitMannger'
 import { useUserManngerStore } from '@/stores/modules/userMannger'
 
+// 图片测试
+const imgUrl =
+	'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
+
+let srcList: string[] = [
+	'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
+]
+
+const handleImgClick = (url: string) => {
+	console.log(url)
+	srcList = []
+	srcList.push(url)
+}
+
 const userManngerStore = useUserManngerStore()
 
 const unitManngerStore = useUnitManngerStore()
 unitManngerStore.getUnitListAction()
 const { classList } = storeToRefs(unitManngerStore)
-const { userList, userTotal } = storeToRefs(userManngerStore)
+const { userList, userTotal, defaultRole } = storeToRefs(userManngerStore)
 // 分页数据
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -216,14 +244,15 @@ const searchFormRef = ref<FormInstance>()
  */
 const searchForm = reactive({
 	name: '',
-	role: '',
+	role: defaultRole,
 	schNo: '',
 	className: []
 })
 
 // 处理表单数据，发送请求
 const comSearchForm = computed(() => {
-	const { className, ...params } = searchForm
+	let { className, ...params } = searchForm
+	className = className || []
 	const unitsName = className.join('|')
 	return {
 		unitsName,
@@ -231,7 +260,7 @@ const comSearchForm = computed(() => {
 	}
 })
 // 进入页面获取所有用户列表
-onMounted(() => {
+onActivated(() => {
 	userManngerStore.getAllUserListAction(comSearchForm.value)
 })
 /**
