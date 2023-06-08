@@ -3,6 +3,7 @@ import piniaPersistConfig from '@/config/piniaPersist'
 import type { User } from '@/global/user'
 import {
 	editUserInfo,
+	exportUserInfo,
 	getAllUserList,
 	getUserInOutInfo
 } from '@/api/modules/userMannger'
@@ -46,6 +47,11 @@ export const useUserManngerStore = defineStore(
 		async function editUserInfoAction(params: User.ReqEditUserInfo) {
 			await editUserInfo(params)
 		}
+		// 导出用户信息Excel
+		async function exportUserInfoAction(unitsId: number) {
+			const res = await exportUserInfo(unitsId)
+			return res
+		}
 		return {
 			total,
 			userInOutData,
@@ -53,6 +59,7 @@ export const useUserManngerStore = defineStore(
 			userList,
 			defaultRole,
 			defaultSession,
+			exportUserInfoAction,
 			getUserInOutListAction,
 			getAllUserListAction,
 			editUserInfoAction

@@ -65,6 +65,14 @@
 			</el-form>
 		</div>
 		<div class="card table-main">
+			<div class="table-header">
+				<div class="header-button-lf">
+					<el-button type="primary" @click="downloadFile" :icon="Download"
+						>导出用户数据</el-button
+					>
+					<el-button type="primary" :icon="Upload">批量添加用户</el-button>
+				</div>
+			</div>
 			<el-table :data="userList" border style="width: 100%">
 				<!-- 索引 -->
 				<el-table-column type="index" label="#" align="center" />
@@ -201,9 +209,22 @@
 </template>
 
 <script setup lang="ts">
-import { Edit, Delete, Search, Picture } from '@element-plus/icons-vue'
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import {
+	Edit,
+	Delete,
+	Search,
+	Picture,
+	Download,
+	Upload
+} from '@element-plus/icons-vue'
+import {
+	ElMessage,
+	ElMessageBox,
+	type FormInstance,
+	type FormRules
+} from 'element-plus'
 import type { User } from '@/global/user'
+import { useDownload } from '@/hooks/useDownload'
 import { useUnitManngerStore } from '@/stores/modules/unitMannger'
 import { useUserManngerStore } from '@/stores/modules/userMannger'
 
@@ -391,6 +412,15 @@ const handleDeleteBtnClick = (rowData: any) => {
  */
 const handleChangeImg = (rowData: any) => {
 	console.log('更改用户照片')
+}
+
+// 导出用户数据
+const downloadFile = async () => {
+	ElMessageBox.confirm('确认导出用户数据?', '温馨提示', {
+		type: 'warning'
+	}).then(() =>
+		useDownload(userManngerStore.exportUserInfoAction, '用户数据', 1)
+	)
 }
 </script>
 

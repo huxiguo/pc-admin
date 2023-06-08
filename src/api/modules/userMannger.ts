@@ -33,3 +33,10 @@ export const getAllUserList = (
 export const editUserInfo = (params: User.ReqEditUserInfo) => {
 	return http.put<any>('/user/editUser', params)
 }
+
+/**
+ * 导出用户信息Excel
+ */
+export const exportUserInfo = (unitsId: number) => {
+	return http.post<any>(`/user/exportUserExcel/${unitsId}`)
+}
