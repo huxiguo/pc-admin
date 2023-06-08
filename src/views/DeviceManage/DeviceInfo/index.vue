@@ -132,21 +132,19 @@ const handleEditBtnClick = (rowData: any) => {
 	})
 }
 // 表格删除按钮回调
-const handleDeleteBtnClick = (id: string) => {
+const handleDeleteBtnClick = async (id: string) => {
 	let arr = []
 	arr.push(id)
-	deviceStore.delDeviceAction(arr).then(res => {
-		deviceStore.getAllDeviceInfoAction(
-			searchForm.value,
-			currentPage.value,
-			pageSize.value
-		)
-	})
+	await deviceStore.delDeviceAction(arr)
+	await deviceStore.getAllDeviceInfoAction(
+		searchForm.value,
+		currentPage.value,
+		pageSize.value
+	)
 	ElMessage({
 		message: '删除成功',
 		type: 'success'
 	})
-	console.log('删除成功')
 }
 const dialogFormRef = ref<FormInstance>()
 /*
