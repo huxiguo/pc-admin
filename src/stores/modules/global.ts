@@ -6,7 +6,7 @@ export const useGlobalStore = defineStore(
 	'global',
 	() => {
 		// 面包屑导航图标
-		const isCollapse = ref(true)
+		const isCollapse = ref(false)
 		// 激活的menu
 		const activePath = ref(HOME_URL)
 		/**
@@ -31,6 +31,6 @@ export const useGlobalStore = defineStore(
 		}
 	},
 	{
-		persist: piniaPersistConfig('global')
+		persist: piniaPersistConfig('global', ['isCollapse', 'activePath'])
 	}
 )

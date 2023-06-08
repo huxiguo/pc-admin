@@ -10,11 +10,12 @@
 							<el-input
 								v-model:model-value="searchForm.cardName"
 								placeholder="请输入姓名"
+								clearable
 							/>
 						</el-form-item>
 					</el-col>
 					<el-col :span="6">
-						<el-form-item label="班级:" prop="unitsName">
+						<el-form-item label="班级:" prop="className">
 							<el-cascader
 								v-model="searchForm.className"
 								:options="classList"
@@ -28,6 +29,7 @@
 							<el-input
 								v-model:model-value="searchForm.schNo"
 								placeholder="请输入学号"
+								clearable
 							/>
 						</el-form-item>
 					</el-col>
@@ -63,6 +65,7 @@
 							<el-input
 								v-model.number="searchForm.session"
 								placeholder="请输入年份"
+								clearable
 							/>
 						</el-form-item>
 					</el-col>
@@ -171,7 +174,8 @@ const props = {
 }
 const userMannger = useUserManngerStore()
 
-const { total, userInOutData } = storeToRefs(userMannger)
+const { total, userInOutData, defaultRole, defaultSession } =
+	storeToRefs(userMannger)
 /**
  * 表单组件实例
  */
@@ -185,11 +189,11 @@ const searchForm = reactive({
 	// 班级
 	className: [],
 	// 年份
-	session: 0,
+	session: defaultSession,
 	// 学号
 	schNo: '',
 	// 角色
-	role: '0',
+	role: defaultRole,
 	// 时间[]
 	date: ''
 })
@@ -238,6 +242,8 @@ const shortcuts = [
 // 将班级数组拼接
 const comSearchForm = computed(() => {
 	let { date, className, ...rest } = searchForm
+	// className 可能为null
+	className = className || []
 	// 将数组的每一项加上| 拼接成字符串
 	const unitsName = className.join('|')
 	const [startTime, endTime] = date

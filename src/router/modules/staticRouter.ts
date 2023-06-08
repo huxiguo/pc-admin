@@ -1,12 +1,18 @@
 import type { RouteRecordRaw } from 'vue-router'
+import { useGlobalStore } from '@/stores/modules/global'
 import { HOME_URL } from '@/config'
+
+const getIndex = () => {
+	const res = useGlobalStore().activePath || HOME_URL
+	return res
+}
 /**
  * staticRouter (静态路由)
  */
 export const staticRouter: RouteRecordRaw[] = [
 	{
 		path: '/',
-		redirect: HOME_URL
+		redirect: getIndex
 	},
 	{
 		path: '/login',
@@ -19,7 +25,7 @@ export const staticRouter: RouteRecordRaw[] = [
 	{
 		path: '/layout',
 		name: 'layout',
-		redirect: HOME_URL,
+		redirect: getIndex,
 		component: () => import('@/layouts/index.vue'),
 		children: [
 			// 配置一个固定的首页

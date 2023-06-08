@@ -14,6 +14,10 @@ export const useUserManngerStore = defineStore(
 		const userTotal = ref(0)
 		// 用户列表
 		const userList = ref()
+		// 默认选中角色查询参数 0 -- 学生
+		const defaultRole = ref('0')
+		// 默认届
+		const defaultSession = ref(0)
 		// 获取进出表单数据
 		async function getUserInOutListAction(
 			params: User.ReqUserList,
@@ -40,11 +44,16 @@ export const useUserManngerStore = defineStore(
 			userInOutData,
 			userTotal,
 			userList,
+			defaultRole,
+			defaultSession,
 			getUserInOutListAction,
 			getAllUserListAction
 		}
 	},
 	{
-		persist: piniaPersistConfig('userMannger', [])
+		persist: piniaPersistConfig('userMannger', [
+			'defaultRole',
+			'defaultSession'
+		])
 	}
 )
