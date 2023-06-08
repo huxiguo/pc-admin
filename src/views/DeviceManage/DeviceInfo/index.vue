@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormInstance, FormRules } from 'element-plus'
+import type { FormRules, FormInstance } from 'element-plus'
 import { Edit, Delete, Search } from '@element-plus/icons-vue'
 import { useDeviceStore } from '@/stores/modules/device'
 import type { searchForm, dialogForm } from './Interface/form'
@@ -78,8 +78,15 @@ const handleCurrentChange = (newPage: number) => {
 	deviceStore.getAllDeviceInfoAction(searchForm.value, newPage, pageSize.value)
 }
 
-// 表单验证
-const ruleFormRef = ref<FormInstance>()
+// 表单验证规则
+const rules = reactive<FormRules>({
+	name: [{ required: true, message: '请输入设备名称', trigger: 'blur' }],
+	m_nPort: [{ required: true, message: '请输入端口号', trigger: 'blur' }],
+	id: [{ required: true, message: '请输入设备ID', trigger: 'blur' }],
+	m_strIp: [{ required: true, message: '请输入IP地址', trigger: 'blur' }],
+	m_strPassword: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+	m_strUser: [{ required: true, message: '请输入用户名', trigger: 'blur' }]
+})
 
 // 获取表格数据
 onActivated(() => {
@@ -125,60 +132,65 @@ const handleEditBtnClick = (rowData: any) => {
 	})
 }
 // 表格删除按钮回调
-const handleDeleteBtnClick = (id: string) => {
+const handleDeleteBtnClick = async (id: string) => {
 	let arr = []
 	arr.push(id)
-	deviceStore.delDeviceAction(arr)
-	ElMessage({
-		message: '删除成功',
-		type: 'success'
-	})
-	deviceStore.getAllDeviceInfoAction(
+	await deviceStore.delDeviceAction(arr)
+	await deviceStore.getAllDeviceInfoAction(
 		searchForm.value,
 		currentPage.value,
 		pageSize.value
 	)
+	ElMessage({
+		message: '删除成功',
+		type: 'success'
+	})
 }
-const dialogFormRef = ref()
+const dialogFormRef = ref<FormInstance>()
 /*
  * 对话框关闭回调
  */
 const handleEditClose = () => {
 	dialogType.value = ''
-	dialogFormRef.value.resetFields()
+	dialogFormRef.value?.resetFields()
 	DialogVisible.value = false
 }
 /*
  * 对话框确认按钮回调
  */
-const handleConfirmClick = () => {
-	if (dialogType.value === 'add') {
-		deviceStore.addDeviceAction(dialogForm.value)
-		DialogVisible.value = false
-		dialogFormRef.value.resetFields()
-		deviceStore.getAllDeviceInfoAction(
-			searchForm.value,
-			currentPage.value,
-			pageSize.value
-		)
-		ElMessage({
-			message: '添加成功',
-			type: 'success'
-		})
-	} else {
-		deviceStore.editDeviceAction(dialogForm.value)
-		DialogVisible.value = false
-		dialogFormRef.value.resetFields()
-		deviceStore.getAllDeviceInfoAction(
-			searchForm.value,
-			currentPage.value,
-			pageSize.value
-		)
-		ElMessage({
-			message: '编辑成功',
-			type: 'success'
-		})
-	}
+const handleConfirmClick = async (formEl: FormInstance | undefined) => {
+	if (!formEl) return
+	await formEl.validate(valid => {
+		if (valid) {
+			if (dialogType.value === 'add') {
+				deviceStore.addDeviceAction(dialogForm.value)
+				DialogVisible.value = false
+				dialogFormRef.value?.resetFields()
+				deviceStore.getAllDeviceInfoAction(
+					searchForm.value,
+					currentPage.value,
+					pageSize.value
+				)
+				ElMessage({
+					message: '添加成功',
+					type: 'success'
+				})
+			} else {
+				deviceStore.editDeviceAction(dialogForm.value)
+				DialogVisible.value = false
+				dialogFormRef.value?.resetFields()
+				deviceStore.getAllDeviceInfoAction(
+					searchForm.value,
+					currentPage.value,
+					pageSize.value
+				)
+				ElMessage({
+					message: '编辑成功',
+					type: 'success'
+				})
+			}
+		}
+	})
 }
 </script>
 
@@ -366,8 +378,9 @@ const handleConfirmClick = () => {
 			<el-form
 				:model="dialogForm"
 				label-position="left"
-				label-width="85px"
+				label-width="95px"
 				ref="dialogFormRef"
+				:rules="rules"
 			>
 				<el-form-item label="设备ID：" prop="id" v-show="dialogType !== 'edit'">
 					<el-input v-model="dialogForm.id" placeholder="请输入设备ID" />
@@ -411,8 +424,8 @@ const handleConfirmClick = () => {
 			<template #footer>
 				<div class="dialog-footer">
 					<el-button @click="handleEditClose">取消</el-button>
-					<el-button type="primary" @click="handleConfirmClick">
-						保存
+					<el-button type="primary" @click="handleConfirmClick(dialogFormRef)">
+						{{ dialogType === 'add' ? '添加' : '保存' }}
 					</el-button>
 				</div>
 			</template>
