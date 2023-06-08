@@ -16,6 +16,15 @@ export namespace User {
 		schNo: string
 		unitsName: string
 	}
+
+	// 编辑用户信息接口参数
+	export interface ReqEditUserInfo {
+		name: string
+		userId: number
+		schNo: string
+		role: string
+		[key: string]: string | number
+	}
 	// 所有用户信息接口返回数据
 	export interface ResAllUserList {
 		doctorList: any[]

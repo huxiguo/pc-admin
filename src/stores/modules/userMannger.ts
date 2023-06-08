@@ -1,7 +1,11 @@
 import { defineStore } from 'pinia'
 import piniaPersistConfig from '@/config/piniaPersist'
 import type { User } from '@/global/user'
-import { getAllUserList, getUserInOutInfo } from '@/api/modules/userMannger'
+import {
+	editUserInfo,
+	getAllUserList,
+	getUserInOutInfo
+} from '@/api/modules/userMannger'
 
 export const useUserManngerStore = defineStore(
 	'userMannger',
@@ -38,7 +42,10 @@ export const useUserManngerStore = defineStore(
 			userTotal.value = result.total
 			userList.value = result.doctorList
 		}
-
+		// 编辑用户信息
+		async function editUserInfoAction(params: User.ReqEditUserInfo) {
+			await editUserInfo(params)
+		}
 		return {
 			total,
 			userInOutData,
@@ -47,7 +54,8 @@ export const useUserManngerStore = defineStore(
 			defaultRole,
 			defaultSession,
 			getUserInOutListAction,
-			getAllUserListAction
+			getAllUserListAction,
+			editUserInfoAction
 		}
 	},
 	{

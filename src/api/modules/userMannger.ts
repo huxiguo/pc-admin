@@ -26,3 +26,10 @@ export const getAllUserList = (
 		parmas
 	)
 }
+
+/**
+ * 编辑用户信息
+ */
+export const editUserInfo = (params: User.ReqEditUserInfo) => {
+	return http.put<any>('/user/editUser', params)
+}

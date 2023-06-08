@@ -130,8 +130,8 @@
 							<el-button
 								text
 								type="primary"
-								:icon="Edit"
-								@click="handleEditBtnClick(scope.row)"
+								:icon="Picture"
+								@click="handleChangeImg(scope.row)"
 								>更改照片</el-button
 							>
 							<el-button
@@ -162,35 +162,37 @@
 			title="编辑用户"
 			:width="500"
 			center
+			@close="handleEditDialogClose"
 		>
-			<el-form :model="dialogForm" label-position="left" label-width="70px">
-				<el-form-item label="学号：" prop="number">
-					<el-input v-model="dialogForm.number" />
+			<el-form
+				:model="dialogForm"
+				ref="dialogFormRef"
+				label-position="left"
+				label-width="70px"
+				:rules="dialogFormRules"
+			>
+				<el-form-item label="用户ID:" prop="userId">
+					<el-input v-model="dialogForm.userId" disabled />
 				</el-form-item>
-				<el-form-item label="姓名：" prop="name">
-					<el-input v-model="dialogForm.name" />
+				<el-form-item label="姓名:" prop="name">
+					<el-input v-model="dialogForm.name" clearable />
 				</el-form-item>
-				<el-form-item label="性别：" prop="gender">
-					<el-input v-model="dialogForm.gender" />
+				<el-form-item label="学号:" prop="schNo">
+					<el-input v-model="dialogForm.schNo" clearable />
 				</el-form-item>
-				<el-form-item label="手机号：" prop="phone">
-					<el-input v-model="dialogForm.phone" />
-				</el-form-item>
-				<el-form-item label="密码：" prop="password">
-					<el-input v-model="dialogForm.password" />
-				</el-form-item>
-				<el-form-item label="班级：" prop="class">
-					<el-input v-model="dialogForm.class" />
-				</el-form-item>
-				<el-form-item label="学院：" prop="college">
-					<el-input v-model="dialogForm.college" />
+				<el-form-item label="角色:" prop="role">
+					<el-select v-model="dialogForm.role" style="width: 100%">
+						<el-option label="学生" value="0" />
+						<el-option label="老师" value="1" />
+						<el-option label="其他" value="2" />
+					</el-select>
 				</el-form-item>
 			</el-form>
 			<template #footer>
 				<div class="dialog-footer">
-					<el-button @click="editDialogVisible = false">Cancel</el-button>
-					<el-button type="primary" @click="editDialogVisible = false">
-						Confirm
+					<el-button @click="editDialogVisible = false">取 消</el-button>
+					<el-button type="primary" @click="handleEditDialogConfirm()">
+						确 定
 					</el-button>
 				</div>
 			</template>
@@ -199,9 +201,9 @@
 </template>
 
 <script setup lang="ts">
-import { Edit, Delete, Search } from '@element-plus/icons-vue'
-import type { FormInstance } from 'element-plus'
-import type { DialogForm } from './Interface/dialogForm'
+import { Edit, Delete, Search, Picture } from '@element-plus/icons-vue'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import type { User } from '@/global/user'
 import { useUnitManngerStore } from '@/stores/modules/unitMannger'
 import { useUserManngerStore } from '@/stores/modules/userMannger'
 
@@ -301,6 +303,8 @@ const handleCurrentChange = (currentPage: number) => {
 	)
 }
 
+// 编辑对话框Ref
+const dialogFormRef = ref<FormInstance>()
 /**
  * 是否显示编辑用户对话框
  */
@@ -308,28 +312,70 @@ const editDialogVisible = ref(false)
 /**
  *	编辑表单数据
  */
-const dialogForm = reactive<DialogForm>({
+const dialogForm = reactive<User.ReqEditUserInfo>({
 	name: '',
-	class: '',
-	college: '',
-	gender: '',
-	number: '',
-	password: '',
-	phone: ''
+	userId: 0,
+	role: '',
+	schNo: ''
 })
+let copyDialogForm: any = {}
+// 编辑表单校验规则
+const dialogFormRules: FormRules = {
+	name: [
+		{
+			required: true,
+			message: '请输入姓名',
+			trigger: 'blur'
+		}
+	],
+	schNo: [{ required: true, message: '请输入学号', trigger: 'blur' }],
+	role: [{ required: true, message: '请选择角色', trigger: 'blur' }]
+}
 /**
- * 表格编辑按钮
+ * 表格编辑按钮,打开编辑对话框
  * @param rowData 行内数据
  */
 const handleEditBtnClick = (rowData: any) => {
 	editDialogVisible.value = true
 	// 1. 回显表格行内数据
-	for (const key in dialogForm) {
-		console.log('item', key)
-		dialogForm[key] = rowData[key]
+	nextTick(() => {
+		for (const key in dialogForm) {
+			dialogForm[key] = rowData[key]
+		}
+	})
+	// 深拷贝一份表格行内数据
+	copyDialogForm = JSON.parse(JSON.stringify(rowData))
+}
+
+// 关闭对话框
+const handleEditDialogClose = () => {
+	if (!dialogFormRef.value) return
+	dialogFormRef.value.resetFields()
+	editDialogVisible.value = false
+}
+
+// 编辑对话框确认按钮
+const handleEditDialogConfirm = async () => {
+	// 判断表单数据是否发生变化
+	const isChange = Object.keys(dialogForm).some(
+		key => dialogForm[key] !== copyDialogForm[key]
+	)
+	// 如果没有发生变化，直接关闭对话框
+	if (!isChange) {
+		ElMessage.warning('您没有做任何修改')
+		editDialogVisible.value = false
+		return
+	} else {
+		try {
+			await userManngerStore.editUserInfoAction(dialogForm)
+			ElMessage.success('编辑成功')
+		} finally {
+			// 重置表单
+			dialogFormRef.value?.resetFields()
+			// 关闭对话框
+			editDialogVisible.value = false
+		}
 	}
-	// 2. 获取表格最新数据
-	// 3. 发送请求更新数据
 }
 
 /**
@@ -337,7 +383,14 @@ const handleEditBtnClick = (rowData: any) => {
  * @param rowData 行内数据
  */
 const handleDeleteBtnClick = (rowData: any) => {
-	console.log('row', rowData.number)
+	console.log('删除用户')
+}
+
+/**
+ * 更改用户照片
+ */
+const handleChangeImg = (rowData: any) => {
+	console.log('更改用户照片')
 }
 </script>
 
@@ -367,8 +420,9 @@ const handleDeleteBtnClick = (rowData: any) => {
 .perate {
 	display: flex;
 	justify-content: center;
+	flex-direction: column;
 	.el-button {
-		padding: 0;
+		margin-left: 0;
 	}
 }
 </style>
