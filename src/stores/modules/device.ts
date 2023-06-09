@@ -5,7 +5,9 @@ import {
 	getAllDeviceInfo,
 	addDevice,
 	editDevice,
-	delDevice
+	delDevice,
+	runDevice,
+	closeDevice
 } from '@/api/modules/device'
 
 export const useDeviceStore = defineStore(
@@ -34,8 +36,16 @@ export const useDeviceStore = defineStore(
 			await editDevice(params)
 		}
 		// 删除设备
-		async function delDeviceAction(params: any) {
+		async function delDeviceAction(params: Device.ReqDelDevice) {
 			await delDevice(params)
+		}
+		// 启动设备
+		async function runDeviceAction(params: Device.ReqDelDevice) {
+			await runDevice(params)
+		}
+		// 关闭设备
+		async function closeDeviceAction(params: Device.ReqDelDevice) {
+			await closeDevice(params)
 		}
 		return {
 			total,
@@ -43,7 +53,8 @@ export const useDeviceStore = defineStore(
 			getAllDeviceInfoAction,
 			addDeviceAction,
 			editDeviceAction,
-			delDeviceAction
+			delDeviceAction,
+			runDeviceAction
 		}
 	},
 	{

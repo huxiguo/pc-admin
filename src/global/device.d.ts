@@ -37,4 +37,6 @@ export namespace Device {
 	}
 	// 删除设备请求参数
 	export type ReqDelDevice = string[]
+	// 启动关闭设备请求参数
+	export type ReqRunOrCloseDevice = string[]
 }
