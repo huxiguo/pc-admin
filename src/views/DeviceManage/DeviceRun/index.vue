@@ -42,7 +42,6 @@ const typeSelectData = ref([
 // 搜索栏重置按钮回调
 const handleResetBtnClick = () => {
 	searchFormRef.value?.resetFields()
-	currentStatus.value = ''
 	deviceStore.getAllDeviceInfoAction(
 		searchForm.value,
 		currentPage.value,
@@ -101,11 +100,6 @@ const handleSelectUnconnectClick = () => {
 	connectList.forEach((row: device) => {
 		multipleTableRef.value!.toggleRowSelection(row, true)
 	})
-	if (connectList.length !== 0) {
-		currentStatus.value = '0'
-	} else {
-		currentStatus.value = ''
-	}
 }
 // 选择连接中的设备按钮的回调
 const handleSelectConnectClick = () => {
@@ -116,11 +110,6 @@ const handleSelectConnectClick = () => {
 	unconnectList.forEach((row: device) => {
 		multipleTableRef.value!.toggleRowSelection(row, true)
 	})
-	if (unconnectList.length !== 0) {
-		currentStatus.value = '1'
-	} else {
-		currentStatus.value = ''
-	}
 }
 // 连接多台设备的按钮的回调
 const handleConnectClick = () => {
@@ -128,7 +117,6 @@ const handleConnectClick = () => {
 		item.status = '1'
 	})
 	multipleSelection.value = []
-	currentStatus.value = ''
 	deviceStore.getAllDeviceInfoAction(
 		searchForm.value,
 		currentPage.value,
@@ -141,30 +129,11 @@ const handleUnconnectClick = () => {
 		item.status = '0'
 	})
 	multipleSelection.value = []
-	currentStatus.value = ''
 	deviceStore.getAllDeviceInfoAction(
 		searchForm.value,
 		currentPage.value,
 		pageSize.value
 	)
-}
-// 当前选中的设备的状态
-const currentStatus = ref('')
-// 点击表格多选框的回调
-const handleSelectClick = (selection: device[], row: device) => {
-	if (selection.length === 1) {
-		currentStatus.value = row.status
-	} else if (selection.length === 0) {
-		currentStatus.value = ''
-	}
-}
-// 判断表格每行的多选框是否可用
-const selectable = (row: device) => {
-	if (currentStatus.value === '' || currentStatus.value === row.status) {
-		return true
-	} else {
-		return false
-	}
 }
 // 存储表格选中的数据
 const handleSelectionChange = (val: device[]) => {
@@ -172,25 +141,15 @@ const handleSelectionChange = (val: device[]) => {
 }
 // 表格操作栏switch点击回调
 const handleSwitchClick = (row: device) => {
-	// 表格多选框无选中的情况
-	if (multipleSelection.value.length === 0) {
-		// 根据row.status发送请求
-	} else if (multipleSelection.value.length === 1) {
-		//  表格多选框只选中一个的情况
-		//表格选中的设备与修改了状态的设备不是同一个
-		if (multipleSelection.value.findIndex(item => item.id === row.id) === -1) {
-			// 根据row.status发送请求
-		} else {
-			// 表格选中的设备与修改了状态的设备是同一个
-			multipleTableRef.value!.toggleRowSelection(row, false)
-			currentStatus.value = ''
-			// 根据row.status发送请求
-		}
-	} else {
-		// 表格多选框选中多个的情况
-		multipleTableRef.value!.toggleRowSelection(row, false)
-		// 根据row.status发送请求
+	if (row.status === '1') {
+		console.log('发送连接请求')
+	} else if (row.status === '0') {
+		console.log('发送关闭请求')
 	}
+}
+// 取消选中按钮的回调
+const handleCancelSelectClick = () => {
+	multipleTableRef.value!.clearSelection()
 }
 </script>
 
@@ -276,29 +235,6 @@ const handleSwitchClick = (row: device) => {
 							>
 								重置
 							</el-button>
-							<el-button @click="handleSelectUnconnectClick">
-								选择断开的设备
-							</el-button>
-							<el-button @click="handleSelectConnectClick">
-								选择连接中的设备
-							</el-button>
-							<el-button
-								@click="handleConnectClick"
-								type="primary"
-								:class="{
-									connectBtnDisabled: currentStatus !== '0' ? true : false
-								}"
-								:disabled="currentStatus !== '0' ? true : false"
-							>
-								连接
-							</el-button>
-							<el-button
-								@click="handleUnconnectClick"
-								type="danger"
-								:disabled="currentStatus !== '1' ? true : false"
-							>
-								断开
-							</el-button>
 						</div>
 					</el-col></el-row
 				>
@@ -306,21 +242,43 @@ const handleSwitchClick = (row: device) => {
 		</div>
 		<!-- 数据表格 -->
 		<div class="card table-main">
+			<div class="table-header">
+				<div class="header-button-lf">
+					<el-button @click="handleSelectUnconnectClick">
+						选择断开的设备
+					</el-button>
+					<el-button @click="handleSelectConnectClick">
+						选择连接中的设备
+					</el-button>
+					<el-button @click="handleCancelSelectClick">取消选中</el-button>
+					<el-button
+						@click="handleConnectClick"
+						type="primary"
+						:class="{
+							connectBtnDisabled: multipleSelection.length === 0
+						}"
+						:disabled="multipleSelection.length === 0"
+					>
+						连接
+					</el-button>
+					<el-button
+						@click="handleUnconnectClick"
+						type="danger"
+						:disabled="multipleSelection.length === 0"
+					>
+						断开
+					</el-button>
+				</div>
+			</div>
 			<el-table
 				:data="deviceStore.deviceList"
 				border
 				style="width: 100%"
-				@select="handleSelectClick"
 				@selection-change="handleSelectionChange"
 				ref="multipleTableRef"
 			>
 				<!-- 选择框 -->
-				<el-table-column
-					type="selection"
-					width="55"
-					align="center"
-					:selectable="selectable"
-				/>
+				<el-table-column type="selection" width="55" align="center" />
 				<!-- 索引 -->
 				<el-table-column type="index" label="#" width="50" align="center" />
 				<!-- 设备名称 -->
@@ -343,15 +301,6 @@ const handleSwitchClick = (row: device) => {
 				<el-table-column prop="m_nPort" label="端口号" align="center" />
 				<!-- IP地址 -->
 				<el-table-column prop="m_strIp" label="IP地址" align="center" />
-				<!-- 状态 -->
-				<el-table-column prop="m_strIp" label="状态" align="center" width="80">
-					<template #default="scope">
-						<el-tag effect="dark" type="success" v-if="scope.row.status === '1'"
-							>连接</el-tag
-						>
-						<el-tag effect="dark" type="danger" v-else>断开</el-tag>
-					</template>
-				</el-table-column>
 				<!-- 出入类型 -->
 				<el-table-column
 					prop="type"
@@ -429,14 +378,6 @@ const handleSwitchClick = (row: device) => {
 	justify-content: center;
 	.el-button {
 		padding: 0;
-	}
-}
-
-:deep(.el-table__header) {
-	.el-table-column--selection {
-		.el-checkbox {
-			display: none !important;
-		}
 	}
 }
 
