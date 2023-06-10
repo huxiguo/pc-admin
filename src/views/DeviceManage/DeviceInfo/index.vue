@@ -198,7 +198,12 @@ const handleConfirmClick = async (formEl: FormInstance | undefined) => {
 	<div class="table-box">
 		<!-- 搜索表单 -->
 		<div class="card table-search">
-			<el-form :model="searchForm" ref="searchFormRef">
+			<el-form
+				:model="searchForm"
+				ref="searchFormRef"
+				label-position="right"
+				label-width="75px"
+			>
 				<!-- 第一行 -->
 				<el-row :gutter="20" class="row-first">
 					<el-col :span="6">
