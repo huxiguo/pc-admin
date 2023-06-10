@@ -8,7 +8,7 @@ export interface searchForm {
 }
 
 export interface device {
-	id: string
+	id: ''
 	name: string
 	m_nPort: number
 	m_strIp: string
