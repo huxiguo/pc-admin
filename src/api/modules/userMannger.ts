@@ -38,5 +38,5 @@ export const editUserInfo = (params: User.ReqEditUserInfo) => {
  * 导出用户信息Excel
  */
 export const exportUserInfo = (unitsId: number) => {
-	return http.post<any>(`/user/exportUserExcel/${unitsId}`)
+	return http.download<any>(`/user/exportUserExcel/${unitsId}`)
 }

@@ -29,6 +29,9 @@ const config = {
 }
 
 class RequestHttp {
+	download<T>(arg0: string) {
+		throw new Error('Method not implemented.')
+	}
 	service: AxiosInstance
 	public constructor(config: AxiosRequestConfig) {
 		// instantiation
