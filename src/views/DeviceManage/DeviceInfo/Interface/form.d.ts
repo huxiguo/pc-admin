@@ -8,7 +8,7 @@ export interface searchForm {
 }
 
 export interface dialogForm {
-	id: ''
+	id: string
 	name: string
 	m_nPort: number
 	m_strIp: string
