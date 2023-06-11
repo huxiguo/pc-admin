@@ -46,7 +46,7 @@ const handleAddBtnClick = (parent: any) => {
 }
 // 添加对话框确认按钮回调
 const handleConfirmBtnClick = async () => {
-	unitManngerStore.addUnitsAction(dialogForm.value)
+	await unitManngerStore.addUnitsAction(dialogForm.value)
 	dialogVisible.value = false
 	dialogFormRef.value?.resetFields()
 	ElMessage.success('添加成功')
