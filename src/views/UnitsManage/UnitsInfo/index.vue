@@ -16,7 +16,8 @@ const dialogFormRef = ref<FormInstance>()
 const dialogForm = ref<dialogForm>({
 	name: '',
 	parentId: 0,
-	peoples: 0
+	peoples: 0,
+	children: []
 })
 
 // 添加单位对话框表单校验规则
@@ -43,6 +44,9 @@ const handleDeleteBtnClick = async (unitsId: number) => {
 const handleAddBtnClick = (parent: any) => {
 	dialogForm.value.parentId = parent.unitsId
 	dialogVisible.value = true
+	const { code } = parent
+	const arr = code.split('.')
+	console.log(arr)
 }
 // 添加对话框确认按钮回调
 const handleConfirmBtnClick = async () => {
@@ -107,7 +111,6 @@ const handleImportUnitsBtnClick = () => {
 								type="primary"
 								:icon="Plus"
 								@click="handleAddBtnClick(scope.row)"
-								v-if="scope.row.isParent !== 0"
 								>添加单位</el-button
 							>
 							<el-popconfirm
