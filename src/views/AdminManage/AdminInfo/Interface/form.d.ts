@@ -1,19 +1,19 @@
-export interface searchForm {
+export interface dialogForm {
 	name: string
-	m_nPort: number
-	m_strIp: string
-	type: string
-	id: string
-	status: string
+	telephone: string
+	address: string
+	password: string
+	username: string
+	avatar: string
 }
 
-export interface dialogForm {
-	id: string
+export interface admin {
 	name: string
-	m_nPort: number
-	m_strIp: string
-	m_strUser: string
-	m_strPassword: string
-	type: string
-	status: string
+	telephone: string
+	address: string
+	password: string
+	username: string
+	avatar: string
+	id: string
+	enabled: number
 }
