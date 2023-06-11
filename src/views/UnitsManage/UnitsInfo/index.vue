@@ -5,17 +5,13 @@ import { useUnitManngerStore } from '@/stores/modules/unitMannger'
 import { useDownload } from '@/hooks/useDownload'
 import type { dialogForm } from './Interface/form.d'
 import { ElMessage } from 'element-plus'
+import ImportExcel from '@/components/ImportExcel/index.vue'
 
 const unitManngerStore = useUnitManngerStore()
 
 const dialogVisible = ref(false)
 const dialogFormRef = ref<FormInstance>()
-let headers = {}
-const user: string | null = window.localStorage.getItem('user')
-if (user) {
-	const { token } = JSON.parse(user)
-	headers = { token }
-}
+
 // 添加单位对话框form表单数据
 const dialogForm = ref<dialogForm>({
 	name: '',
@@ -35,7 +31,7 @@ onActivated(() => {
 })
 // 导出单位数据按钮回调
 const exportUnitsByExce = () => {
-	useDownload(unitManngerStore.exportUnitsByExcelAction, '下载班级')
+	useDownload(unitManngerStore.exportUnitsByExcelAction, '班级信息')
 }
 // 删除单位按钮回调
 const handleDeleteBtnClick = async (unitsId: number) => {
@@ -49,17 +45,28 @@ const handleAddBtnClick = (parent: any) => {
 	dialogVisible.value = true
 }
 // 添加对话框确认按钮回调
-const handleConfirmBtnClick = () => {
+const handleConfirmBtnClick = async () => {
 	unitManngerStore.addUnitsAction(dialogForm.value)
 	dialogVisible.value = false
 	dialogFormRef.value?.resetFields()
 	ElMessage.success('添加成功')
-	unitManngerStore.getUnitListAction()
+	await unitManngerStore.getUnitListAction()
 }
 // 对话框关闭回调
 const handleDialogClose = () => {
 	dialogVisible.value = false
 	dialogFormRef.value?.resetFields()
+}
+
+// 批量添加单位
+const importDialogRef = ref<InstanceType<typeof ImportExcel> | null>(null)
+const handleImportUnitsBtnClick = () => {
+	const params = {
+		title: '单位',
+		importApi: unitManngerStore.importUnitByExcelAction,
+		getTableList: unitManngerStore.getUnitListAction
+	}
+	importDialogRef.value?.acceptParams(params)
 }
 </script>
 
@@ -73,13 +80,12 @@ const handleDialogClose = () => {
 					<el-button type="primary" :icon="Download" @click="exportUnitsByExce"
 						>导出单位数据</el-button
 					>
-					<el-upload
-						action="http://121.4.34.206:9393/upload"
-						:headers="headers"
-						:show-file-list="false"
+					<el-button
+						type="primary"
+						:icon="Upload"
+						@click="handleImportUnitsBtnClick"
+						>导入单位数据</el-button
 					>
-						<el-button type="primary" :icon="Upload">导入单位数据</el-button>
-					</el-upload>
 				</div>
 			</div>
 			<!-- 表格 -->
@@ -159,6 +165,7 @@ const handleDialogClose = () => {
 				</div>
 			</template>
 		</el-dialog>
+		<ImportExcel ref="importDialogRef" />
 	</div>
 </template>
 

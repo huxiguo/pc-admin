@@ -12,7 +12,7 @@ export const exportUnitsByExcel = () => {
 }
 
 // excel导入单位表
-export const importUnitByExcel = (params: any) => {
+export const importUnitByExcel = (params: FormData) => {
 	return http.post('/importUnitByExcel', params)
 }
 
