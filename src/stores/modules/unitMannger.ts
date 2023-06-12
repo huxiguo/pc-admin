@@ -26,7 +26,7 @@ export const useUnitManngerStore = defineStore(
 			return res
 		}
 		// excel导入单位表
-		async function importUnitByExcelAction(params: any) {
+		async function importUnitByExcelAction(params: FormData) {
 			await importUnitByExcel(params)
 		}
 		// 添加单位

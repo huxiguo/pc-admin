@@ -38,5 +38,10 @@ export const editUserInfo = (params: User.ReqEditUserInfo) => {
  * 导出用户信息Excel
  */
 export const exportUserInfo = (unitsId: number) => {
-	return http.download<any>(`/user/exportUserExcel/${unitsId}`)
+	return http.download(`/user/exportUserExcel/${unitsId}`)
+}
+
+// 修改用户人脸照片
+export const editUserFace = (params: FormData) => {
+	return http.post('/user/editUserFace', params)
 }

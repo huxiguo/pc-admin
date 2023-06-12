@@ -167,9 +167,11 @@
 		<el-dialog
 			class="dialogBox"
 			v-model:model-value="editDialogVisible"
+			:destroy-on-close="true"
 			title="编辑用户"
 			:width="500"
 			center
+			draggable
 			@close="handleEditDialogClose"
 		>
 			<el-form
@@ -205,6 +207,8 @@
 				</div>
 			</template>
 		</el-dialog>
+		<!-- 修改用户人脸照片 -->
+		<ChangeUserImg ref="changeUserImgDialogRef" />
 	</div>
 </template>
 
@@ -227,6 +231,8 @@ import type { User } from '@/global/user'
 import { useDownload } from '@/hooks/useDownload'
 import { useUnitManngerStore } from '@/stores/modules/unitMannger'
 import { useUserManngerStore } from '@/stores/modules/userMannger'
+import { useDeviceStore } from '@/stores/modules/device'
+import ChangeUserImg from '@/components/ChangeUserImg/index.vue'
 
 // 图片测试
 const imgUrl =
@@ -243,9 +249,9 @@ const handleImgClick = (url: string) => {
 }
 
 const userManngerStore = useUserManngerStore()
-
 const unitManngerStore = useUnitManngerStore()
-unitManngerStore.getUnitListAction()
+const deviceStore = useDeviceStore()
+
 const { classList } = storeToRefs(unitManngerStore)
 const { userList, userTotal, defaultRole } = storeToRefs(userManngerStore)
 // 分页数据
@@ -284,6 +290,8 @@ const comSearchForm = computed(() => {
 })
 // 进入页面获取所有用户列表
 onActivated(() => {
+	unitManngerStore.getUnitListAction()
+	deviceStore.getAllDeviceInfoAction({})
 	userManngerStore.getAllUserListAction(comSearchForm.value)
 })
 /**
@@ -407,11 +415,15 @@ const handleDeleteBtnClick = (rowData: any) => {
 	console.log('删除用户')
 }
 
+// 更改用户照片Ref
+const changeUserImgDialogRef = ref<InstanceType<typeof ChangeUserImg> | null>(
+	null
+)
 /**
  * 更改用户照片
  */
 const handleChangeImg = (rowData: any) => {
-	console.log('更改用户照片')
+	changeUserImgDialogRef.value?.changeDialogVisible(true, rowData.schNo)
 }
 
 // 导出用户数据

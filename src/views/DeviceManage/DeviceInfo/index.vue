@@ -160,13 +160,13 @@ const handleEditClose = () => {
  */
 const handleConfirmClick = async (formEl: FormInstance | undefined) => {
 	if (!formEl) return
-	await formEl.validate(valid => {
+	await formEl.validate(async valid => {
 		if (valid) {
 			if (dialogType.value === 'add') {
-				deviceStore.addDeviceAction(dialogForm.value)
+				await deviceStore.addDeviceAction(dialogForm.value)
 				DialogVisible.value = false
 				dialogFormRef.value?.resetFields()
-				deviceStore.getAllDeviceInfoAction(
+				await deviceStore.getAllDeviceInfoAction(
 					searchForm.value,
 					currentPage.value,
 					pageSize.value

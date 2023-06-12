@@ -58,6 +58,6 @@ export const useDeviceStore = defineStore(
 		}
 	},
 	{
-		persist: piniaPersistConfig('device', [])
+		persist: piniaPersistConfig('device')
 	}
 )

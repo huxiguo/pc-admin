@@ -5,7 +5,8 @@ import {
 	editUserInfo,
 	exportUserInfo,
 	getAllUserList,
-	getUserInOutInfo
+	getUserInOutInfo,
+	editUserFace
 } from '@/api/modules/userMannger'
 
 export const useUserManngerStore = defineStore(
@@ -52,6 +53,10 @@ export const useUserManngerStore = defineStore(
 			const res = await exportUserInfo(unitsId)
 			return res
 		}
+		// 修改用户人脸照片
+		async function editUserFaceAction(params: FormData) {
+			await editUserFace(params)
+		}
 		return {
 			total,
 			userInOutData,
@@ -62,7 +67,8 @@ export const useUserManngerStore = defineStore(
 			exportUserInfoAction,
 			getUserInOutListAction,
 			getAllUserListAction,
-			editUserInfoAction
+			editUserInfoAction,
+			editUserFaceAction
 		}
 	},
 	{

@@ -1,5 +1,6 @@
 <template>
 	<el-dialog
+		class="dialogBox"
 		v-model="dialogVisible"
 		:title="`批量添加${parameter.title}`"
 		:destroy-on-close="true"
@@ -58,8 +59,6 @@ export interface ExcelParameterProps {
 	getTableList?: () => void // 获取表格数据的Api
 }
 
-// 是否覆盖数据
-const isCover = ref(false)
 // 最大文件上传数
 const excelLimit = ref(1)
 // dialog状态
@@ -84,7 +83,6 @@ const acceptParams = (params: ExcelParameterProps) => {
 const uploadExcel = async (param: UploadRequestOptions) => {
 	let excelFormData = new FormData()
 	excelFormData.append('file', param.file)
-	excelFormData.append('isCover', isCover.value as unknown as Blob)
 	await parameter.value.importApi!(excelFormData)
 	parameter.value.getTableList && parameter.value.getTableList()
 	dialogVisible.value = false
