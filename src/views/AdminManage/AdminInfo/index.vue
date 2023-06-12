@@ -238,7 +238,7 @@ const handleConfirmClick = async (formEl: FormInstance | undefined) => {
 				<!-- 头像 -->
 				<el-table-column label="头像" width="250" align="center">
 					<template #default="{ row }">
-						<img :src="row.avatar" alt="" style="width: 180px" />
+						<img :src="row.avatar" alt="" style="width: 80px" />
 					</template>
 				</el-table-column>
 				<!-- 操作 -->
