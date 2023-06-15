@@ -52,6 +52,7 @@ declare module '@vue/runtime-core' {
     ElTag: typeof import('element-plus/es')['ElTag']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     ImportExcel: typeof import('./src/components/ImportExcel/index.vue')['default']
+    ImportUserExcel: typeof import('./src/components/ImportUserExcel/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ScrollSelect: typeof import('./src/components/ScrollSelect/index.vue')['default']

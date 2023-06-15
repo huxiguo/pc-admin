@@ -17,9 +17,8 @@ const globalStore = useGlobalStore()
 const { lastDeviceId } = storeToRefs(globalStore)
 
 export interface ImgParameterProps {
-	stuNo: string
-	fileType?: File.ImageMimeType[] // 上传文件的类型
-	importApi?: (params: any) => Promise<any> // 上传图片的Api
+	fileType?: File.ExcelMimeType[] // 上传文件的类型
+	importApi?: (params: any) => Promise<any> // 上传文件的Api
 	getTableList?: () => void // 获取表格数据的Api
 }
 
@@ -32,10 +31,12 @@ const step1FormData = reactive({
 })
 
 const parameter = ref<ImgParameterProps>({
-	stuNo: '',
-	// 图片类型
-	fileType: ['image/jpeg', 'image/png', 'image/jpg'],
-	importApi: userManngerStore.editUserFaceAction,
+	// excel类型
+	fileType: [
+		'application/vnd.ms-excel',
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+	],
+	importApi: userManngerStore.importUserInfoAction,
 	getTableList: userManngerStore.getAllUserListAction
 })
 
@@ -47,8 +48,7 @@ const excelLimit = ref(1)
 // 当前步骤
 const activeStep = ref(1)
 
-const acceptParams = (params: ImgParameterProps) => {
-	parameter.value = { ...parameter.value, ...params }
+const acceptParams = () => {
 	dialogVisible.value = true
 }
 // 上一步
@@ -66,13 +66,13 @@ const handleVisibleChange = (visible: boolean) => {
 	}
 }
 
+// 父组件传递的学号参数
+
 // 文件上传
 const uploadExcel = async (param: UploadRequestOptions) => {
 	let imgFormData = new FormData()
-	const { stuNo } = parameter.value
 	imgFormData.append('file', param.file)
 	imgFormData.append('deviceNos', step1FormData.deviceId as any)
-	imgFormData.append('stuNo', stuNo)
 	console.log(imgFormData)
 	await parameter.value.importApi!(imgFormData)
 	parameter.value.getTableList && (await parameter.value.getTableList())
@@ -85,13 +85,13 @@ const uploadExcel = async (param: UploadRequestOptions) => {
  * */
 const beforeExcelUpload = (file: UploadRawFile) => {
 	const isImg = parameter.value.fileType!.includes(
-		file.type as File.ImageMimeType
+		file.type as File.ExcelMimeType
 	)
 	const fileSize = file.size / 1024 / 1024 < 5
 	if (!isImg)
 		ElNotification({
 			title: '温馨提示',
-			message: '上传文件只能是 jpg jpeg png 格式！',
+			message: '上传文件只能是 xls / xlsx 格式！',
 			type: 'warning'
 		})
 	if (!fileSize)
@@ -151,7 +151,7 @@ defineExpose({
 <template>
 	<el-dialog
 		class="dialogBox"
-		title="修改人脸"
+		title="上传文件"
 		v-model="dialogVisible"
 		:destroy-on-close="true"
 		@closed="handleClosed"
@@ -159,10 +159,10 @@ defineExpose({
 		draggable
 		center
 	>
-		<!-- 一个步骤条，先选择设备，在进行图片上传 -->
+		<!-- 一个步骤条，先选择设备，在进行文件上传 -->
 		<el-steps :active="activeStep" finish-status="success">
 			<el-step title="选择设备" :icon="Link" />
-			<el-step title="上传图片" :icon="Picture" />
+			<el-step title="上传文件" :icon="Picture" />
 		</el-steps>
 		<div style="margin: 40px 10px">
 			<el-form
@@ -192,7 +192,7 @@ defineExpose({
 			</el-form>
 			<el-form v-show="activeStep === 2">
 				<!-- 步骤二：上传图片 -->
-				<el-form-item label="人脸图片上传 :">
+				<el-form-item label="用户excel上传 :">
 					<el-upload
 						action="#"
 						style="width: 80%"
@@ -209,13 +209,13 @@ defineExpose({
 								<upload-filled />
 							</el-icon>
 							<div class="el-upload__text">
-								将图片拖到此处，或<em>点击上传</em>
+								将文件拖到此处，或<em>点击上传</em>
 							</div>
 						</slot>
 						<template #tip>
 							<slot name="tip">
 								<div class="el-upload__tip">
-									请上传 jpg,jpeg,png 标准格式文件
+									请上传 .xls , .xlsx 标准格式文件，文件最大为 5M
 								</div>
 							</slot>
 						</template>

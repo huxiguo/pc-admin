@@ -11,10 +11,10 @@ export namespace User {
 	}
 	// 所有用户信息
 	export interface ReqAllUserList {
-		name: string
-		role: string
-		schNo: string
-		unitsName: string
+		name?: string
+		role?: string
+		schNo?: string
+		unitsName?: string
 	}
 
 	// 编辑用户信息接口参数

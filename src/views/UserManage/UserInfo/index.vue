@@ -70,7 +70,12 @@
 					<el-button type="primary" @click="downloadFile" :icon="Download"
 						>导出用户数据</el-button
 					>
-					<el-button type="primary" :icon="Upload">批量添加用户</el-button>
+					<el-button
+						type="primary"
+						:icon="Upload"
+						@click="handleImportUserClick"
+						>批量添加用户</el-button
+					>
 				</div>
 			</div>
 			<el-table :data="userList" border style="width: 100%">
@@ -209,6 +214,7 @@
 		</el-dialog>
 		<!-- 修改用户人脸照片 -->
 		<ChangeUserImg ref="changeUserImgDialogRef" />
+		<ImportUserExcel ref="importDialogRef" />
 	</div>
 </template>
 
@@ -233,6 +239,7 @@ import { useUnitManngerStore } from '@/stores/modules/unitMannger'
 import { useUserManngerStore } from '@/stores/modules/userMannger'
 import { useDeviceStore } from '@/stores/modules/device'
 import ChangeUserImg from '@/components/ChangeUserImg/index.vue'
+import ImportUserExcel from '@/components/ImportUserExcel/index.vue'
 
 // 图片测试
 const imgUrl =
@@ -436,6 +443,13 @@ const downloadFile = async () => {
 	}).then(() =>
 		useDownload(userManngerStore.exportUserInfoAction, '用户数据', 1)
 	)
+}
+
+const importDialogRef = ref<InstanceType<typeof ImportUserExcel> | null>(null)
+// 上传用户数据
+const handleImportUserClick = () => {
+	console.log('上传用户数据')
+	importDialogRef.value?.acceptParams()
 }
 </script>
 

@@ -45,3 +45,10 @@ export const exportUserInfo = (unitsId: number) => {
 export const editUserFace = (params: FormData) => {
 	return http.post('/user/editUserFace', params)
 }
+
+/**
+ * 导入用户信息Excel
+ */
+export const importUserInfo = (params: FormData) => {
+	return http.post('/user/importUserExcel', params)
+}

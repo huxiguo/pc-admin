@@ -6,7 +6,8 @@ import {
 	exportUserInfo,
 	getAllUserList,
 	getUserInOutInfo,
-	editUserFace
+	editUserFace,
+	importUserInfo
 } from '@/api/modules/userMannger'
 
 export const useUserManngerStore = defineStore(
@@ -36,7 +37,7 @@ export const useUserManngerStore = defineStore(
 		}
 		// 获取所有用户列表
 		async function getAllUserListAction(
-			params: User.ReqAllUserList,
+			params: User.ReqAllUserList = {},
 			currentPage: number = 1,
 			pageSize: number = 10
 		) {
@@ -57,6 +58,10 @@ export const useUserManngerStore = defineStore(
 		async function editUserFaceAction(params: FormData) {
 			await editUserFace(params)
 		}
+		// 导入用户信息Excel
+		async function importUserInfoAction(params: FormData) {
+			await importUserInfo(params)
+		}
 		return {
 			total,
 			userInOutData,
@@ -68,7 +73,8 @@ export const useUserManngerStore = defineStore(
 			getUserInOutListAction,
 			getAllUserListAction,
 			editUserInfoAction,
-			editUserFaceAction
+			editUserFaceAction,
+			importUserInfoAction
 		}
 	},
 	{
