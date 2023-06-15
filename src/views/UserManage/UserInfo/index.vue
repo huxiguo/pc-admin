@@ -423,7 +423,10 @@ const changeUserImgDialogRef = ref<InstanceType<typeof ChangeUserImg> | null>(
  * 更改用户照片
  */
 const handleChangeImg = (rowData: any) => {
-	changeUserImgDialogRef.value?.changeDialogVisible(true, rowData.schNo)
+	const params = {
+		stuNo: rowData.schNo
+	}
+	changeUserImgDialogRef.value?.acceptParams(params)
 }
 
 // 导出用户数据

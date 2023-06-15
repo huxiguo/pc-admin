@@ -16,12 +16,13 @@ const userManngerStore = useUserManngerStore()
 const globalStore = useGlobalStore()
 const { lastDeviceId } = storeToRefs(globalStore)
 
-export interface ExcelParameterProps {
-	data?: any
+export interface ImgParameterProps {
+	stuNo: string
 	fileType?: File.ImageMimeType[] // 上传文件的类型
 	importApi?: (params: any) => Promise<any> // 上传图片的Api
 	getTableList?: (param: any) => void // 获取表格数据的Api
 }
+
 // 设备表单ref
 const step1FormRef = ref<FormInstance | null>(null)
 
@@ -30,8 +31,13 @@ const step1FormData = reactive({
 	deviceId: lastDeviceId.value || []
 })
 
-// 学号
-const stuNo = ref('')
+const parameter = ref<ImgParameterProps>({
+	stuNo: '',
+	// 图片类型
+	fileType: ['image/jpeg', 'image/png', 'image/jpg'],
+	importApi: userManngerStore.editUserFaceAction,
+	getTableList: userManngerStore.getAllUserListAction
+})
 
 // dialog状态
 const dialogVisible = ref(false)
@@ -41,10 +47,10 @@ const excelLimit = ref(1)
 // 当前步骤
 const activeStep = ref(1)
 
-const changeDialogVisible = (visible: boolean, stuId: string) => {
-	console.log(stuId)
-	dialogVisible.value = visible
-	stuNo.value = stuId
+const acceptParams = (params: ImgParameterProps) => {
+	parameter.value = { ...parameter.value, ...params }
+	console.log(parameter.value)
+	dialogVisible.value = true
 }
 // 上一步
 const prevStep = () => {
@@ -61,28 +67,17 @@ const handleVisibleChange = (visible: boolean) => {
 	}
 }
 
-const parameter = ref<ExcelParameterProps>({
-	data: {
-		deviceNos: step1FormData.deviceId,
-		stuNo: stuNo.value
-	},
-	// 图片类型
-	fileType: ['image/jpeg', 'image/png', 'image/jpg'],
-	importApi: userManngerStore.editUserFaceAction,
-	getTableList: userManngerStore.getAllUserListAction
-})
-
 // 父组件传递的学号参数
 
 // 文件上传
 const uploadExcel = async (param: UploadRequestOptions) => {
-	let excelFormData = new FormData()
-	const { data } = parameter.value
-	excelFormData.append('file', param.file)
-	excelFormData.append('deviceNos', data.deviceNos)
-	excelFormData.append('stuNo', data.stuNo)
-	console.log(data)
-	await parameter.value.importApi!(excelFormData)
+	let imgFormData = new FormData()
+	const { stuNo } = parameter.value
+	imgFormData.append('file', param.file)
+	imgFormData.append('deviceNos', step1FormData.deviceId as any)
+	imgFormData.append('stuNo', stuNo)
+	console.log(imgFormData)
+	await parameter.value.importApi!(imgFormData)
 	parameter.value.getTableList && (await parameter.value.getTableList({}))
 	dialogVisible.value = false
 }
@@ -140,13 +135,6 @@ const excelUploadSuccess = () => {
 	})
 }
 
-// 点击提交按钮
-const handleSubmitBtnClick = () => {
-	console.log('点击提交按钮')
-	console.log(step1FormData.deviceId)
-	console.log(stuNo.value)
-}
-
 // 关闭弹窗
 const handleClosed = () => {
 	activeStep.value = 1
@@ -159,7 +147,7 @@ const handleDeviceChange = (val: string[]) => {
 }
 
 defineExpose({
-	changeDialogVisible
+	acceptParams
 })
 </script>
 
