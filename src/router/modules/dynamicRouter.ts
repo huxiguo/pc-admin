@@ -23,7 +23,8 @@ export const initDynamicRouter = async () => {
 				type: 'warning',
 				duration: 3000
 			})
-			userStore.token = ''
+			userStore.access_token = ''
+			userStore.refresh_token = ''
 			router.replace('login')
 			return Promise.reject('No permission')
 		}
@@ -49,7 +50,8 @@ export const initDynamicRouter = async () => {
 		})
 	} catch (error) {
 		// 当按钮 || 菜单请求出错时，重定向到登陆页
-		userStore.token = ''
+		userStore.access_token = ''
+		userStore.refresh_token = ''
 		router.replace('/login')
 		return Promise.reject(error)
 	}

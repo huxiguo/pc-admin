@@ -7,7 +7,7 @@ import qs from 'qs'
  */
 // 用户登录
 export const loginApi = (params: Login.ReqLoginForm) => {
-	return http.post<Login.ResLogin>('/admin/login', qs.stringify(params), {
+	return http.post<any>('/admin/login', qs.stringify(params), {
 		noLoading: true
 	})
 }

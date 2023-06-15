@@ -44,7 +44,8 @@ const logout = () => {
 		// 1.执行退出登录接口
 		await logoutApi()
 		// 2.清除 Token
-		userStore.token = ''
+		userStore.access_token = ''
+		userStore.refresh_token = ''
 
 		// 3.重定向到登陆页
 		router.replace('/login')

@@ -114,22 +114,20 @@ const login = (formEl: FormInstance | undefined) => {
 		loading.value = true
 		try {
 			// 发送登录请求
-			const data = await userStore.adminLogin(loginForm)
+			await userStore.adminLogin(loginForm)
 			// 登录成功
-			if (data.success) {
-				// 添加动态路由
-				await initDynamicRouter()
-				// 获取用户信息
-				await userStore.getUserInfoAction()
-				// 跳转到首页
-				router.push(globalStore.activePath || HOME_URL)
-				ElNotification({
-					title: getTimeState(),
-					message: '欢迎登录',
-					type: 'success',
-					duration: 3000
-				})
-			}
+			// 添加动态路由
+			await initDynamicRouter()
+			// 获取用户信息
+			await userStore.getUserInfoAction()
+			// 跳转到首页
+			router.push(globalStore.activePath || HOME_URL)
+			ElNotification({
+				title: getTimeState(),
+				message: '欢迎登录',
+				type: 'success',
+				duration: 3000
+			})
 		} finally {
 			loading.value = false
 		}

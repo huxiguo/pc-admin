@@ -9,6 +9,17 @@ export const useGlobalStore = defineStore(
 		const isCollapse = ref(false)
 		// 激活的menu
 		const activePath = ref(HOME_URL)
+
+		// 上一次选择的设备ID
+		const lastDeviceId = ref<string[]>([])
+
+		/**
+		 * 设置上一次选择的设备ID
+		 */
+		function setLastDeviceIdAction(value: string[]) {
+			lastDeviceId.value = value
+		}
+
 		/**
 		 * 切换侧边栏显示与隐藏
 		 * @param value 是否隐藏侧边栏
@@ -26,11 +37,17 @@ export const useGlobalStore = defineStore(
 		return {
 			isCollapse,
 			activePath,
+			lastDeviceId,
 			setIsCollapseAction,
-			setActivePathAction
+			setActivePathAction,
+			setLastDeviceIdAction
 		}
 	},
 	{
-		persist: piniaPersistConfig('global', ['isCollapse', 'activePath'])
+		persist: piniaPersistConfig('global', [
+			'isCollapse',
+			'activePath',
+			'lastDeviceId'
+		])
 	}
 )

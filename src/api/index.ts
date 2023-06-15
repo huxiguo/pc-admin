@@ -45,12 +45,10 @@ class RequestHttp {
 				// 当前请求不需要显示 loading，在 api 服务中通过指定的第三个参数: { noLoading: true } 来控制
 				config.noLoading || showFullScreenLoading()
 				// 登录成功后设置token
-				if (userStore.token) {
-					config.headers['Token'] = userStore.token
+				if (userStore.access_token && userStore.refresh_token) {
+					config.headers['access_token'] = userStore.access_token
+					config.headers['refresh_token'] = userStore.refresh_token
 				}
-				// if (config.headers && typeof config.headers.set === 'function') {
-				// 	config.headers.set('banaer', userStore.token)
-				// }
 				return config
 			},
 			(error: AxiosError) => {
@@ -64,12 +62,20 @@ class RequestHttp {
 		 */
 		this.service.interceptors.response.use(
 			(response: AxiosResponse) => {
-				const { data } = response
+				const { data, headers } = response
 				const userStore = useUserStore()
 				tryHideFullScreenLoading()
+				// Todo 双token验证
+				const access_token = headers['access_token']
+				const refresh_token = headers['refresh_token']
+				if (access_token && refresh_token) {
+					userStore.access_token = access_token
+					userStore.refresh_token = refresh_token
+				}
 				// 登陆失效
 				if (data.code == ResultEnum.OVERDUE) {
-					userStore.token = ''
+					userStore.access_token = ''
+					userStore.refresh_token = ''
 					router.replace('/login')
 					ElMessage.error(data.message)
 					return Promise.reject(data)

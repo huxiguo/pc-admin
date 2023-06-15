@@ -25,7 +25,8 @@ router.beforeEach(async (to, from, next) => {
 
 	// 3.判断是访问登陆页，有 Token 就在当前页面，没有 Token 重置路由到登陆页
 	if (to.path.toLocaleLowerCase() === '/login') {
-		if (userStore.token) return next(from.fullPath)
+		if (userStore.refresh_token && userStore.access_token)
+			return next(from.fullPath)
 		return next()
 	}
 	// 4.如果没有菜单列表，就重新请求菜单列表并添加动态路由
@@ -34,7 +35,8 @@ router.beforeEach(async (to, from, next) => {
 		return next({ ...to, replace: true })
 	}
 	// 5.判断是否有 Token，没有重定向到 login 页面
-	if (!userStore.token) return next({ path: '/login', replace: true })
+	if (!(userStore.refresh_token && userStore.access_token))
+		return next({ path: '/login', replace: true })
 
 	// 6.正常访问页面
 	next()

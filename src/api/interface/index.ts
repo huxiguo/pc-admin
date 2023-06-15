@@ -18,9 +18,6 @@ export namespace Login {
 		password: string
 		code: string
 	}
-	export interface ResLogin {
-		token: string
-	}
 }
 
 // 用户模块

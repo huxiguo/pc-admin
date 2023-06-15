@@ -7,15 +7,14 @@ import { getFlatMenuList } from '@/utils/index'
 export const useUserStore = defineStore(
 	'user',
 	() => {
-		const token = ref('')
+		const access_token = ref('')
+		const refresh_token = ref('')
 		const userInfo = ref<User.ResUserInfo>({})
 		const userMenu = ref<User.ResUserMenu[]>([])
 		const flatUserMenu = computed(() => getFlatMenuList(userMenu.value))
 		// login
 		async function adminLogin(params: Login.ReqLoginForm) {
-			const data = await loginApi(params)
-			token.value = data.result.token
-			return data
+			await loginApi(params)
 		}
 		// userInfo
 		async function getUserInfoAction() {
@@ -28,7 +27,8 @@ export const useUserStore = defineStore(
 			userMenu.value = data.result
 		}
 		return {
-			token,
+			access_token,
+			refresh_token,
 			userInfo,
 			userMenu,
 			flatUserMenu,
@@ -38,6 +38,10 @@ export const useUserStore = defineStore(
 		}
 	},
 	{
-		persist: piniaPersistConfig('user', ['token', 'userInfo'])
+		persist: piniaPersistConfig('user', [
+			'access_token',
+			'refresh_token',
+			'userInfo'
+		])
 	}
 )

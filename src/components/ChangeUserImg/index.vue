@@ -6,11 +6,15 @@ import type { UploadRequestOptions, UploadRawFile } from 'element-plus'
 import type { File } from '@/global/File'
 import { useDeviceStore } from '@/stores/modules/device'
 import { useUserManngerStore } from '@/stores/modules/userMannger'
+import { useGlobalStore } from '@/stores/modules/global'
 
 const deviceStore = useDeviceStore()
 const { total, deviceList } = storeToRefs(deviceStore)
 
 const userManngerStore = useUserManngerStore()
+
+const globalStore = useGlobalStore()
+const { lastDeviceId } = storeToRefs(globalStore)
 
 export interface ExcelParameterProps {
 	data?: any
@@ -23,7 +27,7 @@ const step1FormRef = ref<FormInstance | null>(null)
 
 // 设备ID
 const step1FormData = reactive({
-	deviceId: []
+	deviceId: lastDeviceId.value || []
 })
 
 // 学号
@@ -38,6 +42,7 @@ const excelLimit = ref(1)
 const activeStep = ref(1)
 
 const changeDialogVisible = (visible: boolean, stuId: string) => {
+	console.log(stuId)
 	dialogVisible.value = visible
 	stuNo.value = stuId
 }
@@ -67,6 +72,8 @@ const parameter = ref<ExcelParameterProps>({
 	getTableList: userManngerStore.getAllUserListAction
 })
 
+// 父组件传递的学号参数
+
 // 文件上传
 const uploadExcel = async (param: UploadRequestOptions) => {
 	let excelFormData = new FormData()
@@ -74,6 +81,7 @@ const uploadExcel = async (param: UploadRequestOptions) => {
 	excelFormData.append('file', param.file)
 	excelFormData.append('deviceNos', data.deviceNos)
 	excelFormData.append('stuNo', data.stuNo)
+	console.log(data)
 	await parameter.value.importApi!(excelFormData)
 	parameter.value.getTableList && (await parameter.value.getTableList({}))
 	dialogVisible.value = false
@@ -145,6 +153,11 @@ const handleClosed = () => {
 	step1FormRef.value?.resetFields()
 }
 
+// 选择设备change事件
+const handleDeviceChange = (val: string[]) => {
+	globalStore.setLastDeviceIdAction(val)
+}
+
 defineExpose({
 	changeDialogVisible
 })
@@ -180,6 +193,7 @@ defineExpose({
 						clearable
 						multiple
 						@visible-change="handleVisibleChange"
+						@change="handleDeviceChange"
 					>
 						<el-option
 							v-for="item in deviceList"
