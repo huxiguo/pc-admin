@@ -1,5 +1,5 @@
 export namespace Admin {
-	// 获取所有管理员返回参数
+	// 获取所有管理员返回数据
 	export interface ResAllAdmin {
 		adminList: any[]
 		total: number

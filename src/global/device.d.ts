@@ -9,7 +9,7 @@ export namespace Device {
 		type?: string
 	}
 
-	// 获取所有设备返回参数
+	// 获取所有设备返回数据
 	export interface ResAllDevice {
 		deviceList: any[]
 		total: number
