@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineEmits, defineProps } from 'vue'
 import * as Icons from '@element-plus/icons-vue'
 
 interface Props {
