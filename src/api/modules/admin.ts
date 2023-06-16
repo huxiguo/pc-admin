@@ -3,7 +3,9 @@ import type { Admin } from '@/global/admin.d'
 
 // 获取所有设备信息
 export const getAllAdmin = (currentPage: number, pageSize: number) => {
-	return http.get<any>(`/admin/backGetAllAdmin/${currentPage}/${pageSize}`)
+	return http.get<Admin.ResAllAdmin>(
+		`/admin/backGetAllAdmin/${currentPage}/${pageSize}`
+	)
 }
 
 // 添加管理员

@@ -46,15 +46,19 @@ const handleAddBtnClick = (parent: any) => {
 	dialogVisible.value = true
 	const { code } = parent
 	const arr = code.split('.')
-	console.log(arr)
 }
 // 添加对话框确认按钮回调
-const handleConfirmBtnClick = async () => {
-	await unitManngerStore.addUnitsAction(dialogForm.value)
-	dialogVisible.value = false
-	dialogFormRef.value?.resetFields()
-	ElMessage.success('添加成功')
-	await unitManngerStore.getUnitListAction()
+const handleConfirmBtnClick = async (formEl: FormInstance | undefined) => {
+	if (!formEl) return
+	await formEl.validate(async valid => {
+		if (valid) {
+			await unitManngerStore.addUnitsAction(dialogForm.value)
+			dialogVisible.value = false
+			dialogFormRef.value?.resetFields()
+			ElMessage.success('添加成功')
+			await unitManngerStore.getUnitListAction()
+		}
+	})
 }
 // 对话框关闭回调
 const handleDialogClose = () => {
@@ -162,7 +166,10 @@ const handleImportUnitsBtnClick = () => {
 			<template #footer>
 				<div class="dialog-footer">
 					<el-button @click="handleDialogClose">取 消</el-button>
-					<el-button type="primary" @click="handleConfirmBtnClick">
+					<el-button
+						type="primary"
+						@click="handleConfirmBtnClick(dialogFormRef)"
+					>
 						确 定
 					</el-button>
 				</div>
