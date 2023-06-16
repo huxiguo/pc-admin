@@ -144,7 +144,7 @@ const handleDialogClose = () => {
 			<el-form
 				:model="dialogForm"
 				ref="dialogFormRef"
-				label-position="left"
+				label-position="right"
 				label-width="95px"
 				:rules="rules"
 			>
@@ -166,7 +166,7 @@ const handleDialogClose = () => {
 						placeholder="请输入路由地址"
 					></el-input>
 				</el-form-item>
-				<el-form-item label="图标" prop="icon">
+				<el-form-item label="图标：" prop="icon">
 					<IconSelector v-model="dialogForm.icon"></IconSelector>
 				</el-form-item>
 			</el-form>
@@ -182,7 +182,6 @@ const handleDialogClose = () => {
 				</div>
 			</template>
 		</el-dialog>
-		<ImportExcel ref="importDialogRef" />
 	</div>
 </template>
 
