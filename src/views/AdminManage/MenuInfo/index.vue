@@ -78,9 +78,8 @@ const handleDialogClose = () => {
 
 <template>
 	<div class="table-box">
-		<!-- 表格及导入导出按钮 -->
+		<!-- 添加菜单按钮 -->
 		<div class="card table-main">
-			<!-- 导入导出按钮 -->
 			<div class="table-header">
 				<div class="header-button-lf">
 					<el-button
