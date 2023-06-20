@@ -112,24 +112,26 @@ const handleSelectConnectClick = () => {
 	})
 }
 // 连接多台设备的按钮的回调
-const handleConnectClick = () => {
+const handleConnectClick = async () => {
+	const arr = ref<string[]>([])
 	multipleSelection.value.forEach(item => {
-		item.status = '1'
+		arr.value.push(item.id)
 	})
-	multipleSelection.value = []
-	deviceStore.getAllDeviceInfoAction(
+	await deviceStore.runDeviceAction(arr.value)
+	await deviceStore.getAllDeviceInfoAction(
 		searchForm.value,
 		currentPage.value,
 		pageSize.value
 	)
 }
 // 断开多台设备的按钮的回调
-const handleUnconnectClick = () => {
+const handleUnconnectClick = async () => {
+	const arr = ref<string[]>([])
 	multipleSelection.value.forEach(item => {
-		item.status = '0'
+		arr.value.push(item.id)
 	})
-	multipleSelection.value = []
-	deviceStore.getAllDeviceInfoAction(
+	await deviceStore.closeDeviceAction(arr.value)
+	await deviceStore.getAllDeviceInfoAction(
 		searchForm.value,
 		currentPage.value,
 		pageSize.value

@@ -9,13 +9,8 @@ export interface searchForm {
 	viewId: number
 }
 
-export interface dialogForm {
-	avatar: string
-	isEnable: string
-	nickname: string
-	openId: string
-	password: string
-	role: string
-	telephone: string
+export interface addUserDialogForm {
+	id: number
+	userId: number
 	viewId: number
 }
