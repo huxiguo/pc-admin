@@ -7,7 +7,9 @@ import {
 	getAllUserList,
 	getUserInOutInfo,
 	editUserFace,
-	importUserInfo
+	importUserInfo,
+	addUser,
+	deleteUser
 } from '@/api/modules/userMannger'
 
 export const useUserManngerStore = defineStore(
@@ -62,6 +64,14 @@ export const useUserManngerStore = defineStore(
 		async function importUserInfoAction(params: FormData) {
 			await importUserInfo(params)
 		}
+		// 添加用户
+		async function addUserAction(params: FormData) {
+			await addUser(params)
+		}
+		// 删除用户
+		async function deleteUserAction(params: any) {
+			await deleteUser(params)
+		}
 		return {
 			total,
 			userInOutData,
@@ -74,7 +84,9 @@ export const useUserManngerStore = defineStore(
 			getAllUserListAction,
 			editUserInfoAction,
 			editUserFaceAction,
-			importUserInfoAction
+			importUserInfoAction,
+			addUserAction,
+			deleteUserAction
 		}
 	},
 	{

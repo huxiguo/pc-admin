@@ -15,6 +15,12 @@ export const getUserInOutInfo = (
 	)
 }
 
+/**
+ * 删除用户出入记录
+ */
+export const deleteAccessRecord = (params: any) => {
+	return http.delete<any>('/access/delAccessRecord', params)
+}
 // 获取所有用户信息
 export const getAllUserList = (
 	parmas: User.ReqAllUserList,
@@ -43,7 +49,7 @@ export const exportUserInfo = (unitsId: number) => {
 
 // 修改用户人脸照片
 export const editUserFace = (params: FormData) => {
-	return http.post('/user/editUserFace', params)
+	return http.post('user/updateFaceByDevices', params)
 }
 
 /**
@@ -51,4 +57,50 @@ export const editUserFace = (params: FormData) => {
  */
 export const importUserInfo = (params: FormData) => {
 	return http.post('/user/importUserExcel', params)
+}
+
+/**
+ * 添加用户
+ */
+export const addUser = (params: FormData) => {
+	return http.post<any>('/user/addUser', params)
+}
+
+/**
+ * 删除用户
+ */
+export const deleteUser = (params: any) => {
+	const { userIds, deviceNos } = params
+	return http.delete<any>(
+		'/user/delUserByIds?userIds=' +
+			userIds.join(',') +
+			'&deviceNos=' +
+			deviceNos.join(',')
+	)
+}
+
+/**
+ * 删除某届用户
+ */
+export const deleteSessionUser = (params: any) => {
+	const { session, deviceNos } = params
+	return http.post<any>(
+		'/user/delUsersBySession?session=' +
+			session +
+			'&deviceNos=' +
+			deviceNos.join(',')
+	)
+}
+
+/**
+ * 删除某单位用户
+ */
+export const deleteUnitUser = (params: any) => {
+	const { unitsId, deviceNos } = params
+	return http.delete<any>(
+		'/user/delUserByUnits?unitsId=' +
+			unitsId +
+			'&deviceNos=' +
+			deviceNos.join(',')
+	)
 }

@@ -72,6 +72,12 @@
 					<el-col :span="6">
 						<div class="operation">
 							<el-button
+								type="danger"
+								:icon="Search"
+								@click="handleDeleteBtnClick"
+								>删除</el-button
+							>
+							<el-button
 								:icon="Search"
 								class="searchBtn"
 								@click="handleSearchBtnClick"
@@ -161,6 +167,7 @@
 <script setup lang="ts">
 import { useUnitManngerStore } from '@/stores/modules/unitMannger'
 import { useUserManngerStore } from '@/stores/modules/userMannger'
+import { deleteAccessRecord } from '@/api/modules/userMannger'
 import { Delete, Search } from '@element-plus/icons-vue'
 import type { FormInstance } from 'element-plus'
 const unitManngerStore = useUnitManngerStore()
@@ -258,6 +265,15 @@ const comSearchForm = computed(() => {
 onMounted(async () => {
 	await userMannger.getUserInOutListAction(comSearchForm.value)
 })
+/**
+ * 删除按钮点击事件
+ */
+const handleDeleteBtnClick = async () => {
+	console.log('删除按钮点击事件')
+	const arr = [10048]
+	await deleteAccessRecord(arr)
+}
+
 /**
  * 查询按钮点击事件
  */

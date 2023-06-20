@@ -94,8 +94,7 @@ const loginForm = reactive<Login.ReqLoginForm>({
 	password: '123456',
 	code: ''
 })
-
-const CAPTCHA_URL = ref('http://mapi.yunog.cn:9393/captcha')
+const CAPTCHA_URL = ref(import.meta.env.VITE_CAPTCHA_URL)
 // 刷新验证码
 const getCodeImg = throttle(() => {
 	CAPTCHA_URL.value = `${CAPTCHA_URL.value}?t=${Date.now()}`

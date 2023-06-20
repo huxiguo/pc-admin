@@ -73,7 +73,7 @@ const uploadExcel = async (param: UploadRequestOptions) => {
 	let imgFormData = new FormData()
 	imgFormData.append('file', param.file)
 	imgFormData.append('deviceNos', step1FormData.deviceId as any)
-	console.log(imgFormData)
+	console.log(step1FormData.deviceId)
 	await parameter.value.importApi!(imgFormData)
 	parameter.value.getTableList && (await parameter.value.getTableList())
 	dialogVisible.value = false

@@ -54,7 +54,8 @@ export const useDeviceStore = defineStore(
 			addDeviceAction,
 			editDeviceAction,
 			delDeviceAction,
-			runDeviceAction
+			runDeviceAction,
+			closeDeviceAction
 		}
 	},
 	{

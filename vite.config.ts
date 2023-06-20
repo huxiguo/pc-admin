@@ -19,7 +19,7 @@ export default defineConfig({
 			resolvers: [ElementPlusResolver()],
 			imports: ['vue', 'pinia', 'vue-router'],
 			eslintrc: {
-				enabled: true
+				enabled: false
 			}
 		}),
 		// 自动导入样式

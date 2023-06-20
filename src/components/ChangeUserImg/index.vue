@@ -70,10 +70,9 @@ const handleVisibleChange = (visible: boolean) => {
 const uploadExcel = async (param: UploadRequestOptions) => {
 	let imgFormData = new FormData()
 	const { stuNo } = parameter.value
-	imgFormData.append('file', param.file)
+	imgFormData.append('face', param.file)
 	imgFormData.append('deviceNos', step1FormData.deviceId as any)
 	imgFormData.append('stuNo', stuNo)
-	console.log(imgFormData)
 	await parameter.value.importApi!(imgFormData)
 	parameter.value.getTableList && (await parameter.value.getTableList())
 	dialogVisible.value = false

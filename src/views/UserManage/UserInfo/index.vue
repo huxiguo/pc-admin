@@ -77,6 +77,23 @@
 						>批量添加用户</el-button
 					>
 				</div>
+				<div class="header-button-ri">
+					<el-button type="primary" @click="addUser" :icon="Download">
+						添加用户
+					</el-button>
+					<el-button type="primary" :icon="Upload" @click="deleteUser"
+						>删除用户</el-button
+					>
+					<el-button type="primary" :icon="Upload" @click="deleteAllUserByUnit"
+						>删除单位所有用户</el-button
+					>
+					<el-button
+						type="primary"
+						:icon="Upload"
+						@click="deleteAllUserBySession"
+						>删除某届所有学生</el-button
+					>
+				</div>
 			</div>
 			<el-table :data="userList" border style="width: 100%">
 				<!-- 索引 -->
@@ -214,7 +231,16 @@
 		</el-dialog>
 		<!-- 修改用户人脸照片 -->
 		<ChangeUserImg ref="changeUserImgDialogRef" />
+		<!-- 导入用户excel -->
 		<ImportUserExcel ref="importDialogRef" />
+		<!-- 选择设备添加用户 -->
+		<AddUserDialog ref="addUserDialogRef" />
+		<!-- 删除用户对话框 -->
+		<DeleteUserDialog ref="deleteUserDialogRef" />
+		<!-- 删除班级下所有用户对话框 -->
+		<DeleteUserByUnit ref="deleteUserByUnitRef" />
+		<!-- 删除届下所有用户对话框 -->
+		<DeleteUserBySession ref="deleteUserBySessionRef" />
 	</div>
 </template>
 
@@ -240,6 +266,10 @@ import { useUserManngerStore } from '@/stores/modules/userMannger'
 import { useDeviceStore } from '@/stores/modules/device'
 import ChangeUserImg from '@/components/ChangeUserImg/index.vue'
 import ImportUserExcel from '@/components/ImportUserExcel/index.vue'
+import AddUserDialog from '@/components/AddUserDialog/index.vue'
+import DeleteUserDialog from '@/components/DeleteUserDialog/index.vue'
+import DeleteUserByUnit from '@/components/DeleteUserByUnit/index.vue'
+import DeleteUserBySession from '@/components/DeleteUserBySession/index.vue'
 
 // 图片测试
 const imgUrl =
@@ -414,11 +444,16 @@ const handleEditDialogConfirm = async () => {
 	}
 }
 
+const deleteUserDialogRef = ref<InstanceType<typeof DeleteUserDialog> | null>(
+	null
+)
+
 /**
  * 表格删除按钮
  * @param rowData 行内数据
  */
 const handleDeleteBtnClick = (rowData: any) => {
+	deleteUserDialogRef.value?.acceptParams(rowData.userId)
 	console.log('删除用户')
 }
 
@@ -450,6 +485,37 @@ const importDialogRef = ref<InstanceType<typeof ImportUserExcel> | null>(null)
 const handleImportUserClick = () => {
 	console.log('上传用户数据')
 	importDialogRef.value?.acceptParams()
+}
+
+const addUserDialogRef = ref<InstanceType<typeof AddUserDialog> | null>(null)
+
+// 选择设备添加用户
+const addUser = () => {
+	console.log('选择设备添加用户')
+	addUserDialogRef.value?.acceptParams()
+}
+
+// 选择设备删除用户
+const deleteUser = () => {
+	console.log('选择设备删除用户')
+}
+const deleteUserByUnitRef = ref<InstanceType<typeof DeleteUserByUnit> | null>(
+	null
+)
+
+// 删除单位所有用户
+const deleteAllUserByUnit = () => {
+	console.log('删除单位所有用户')
+	deleteUserByUnitRef.value?.acceptParams()
+}
+
+const deleteUserBySessionRef = ref<InstanceType<
+	typeof DeleteUserBySession
+> | null>(null)
+// 删除某届所有学生
+const deleteAllUserBySession = () => {
+	deleteUserBySessionRef.value?.acceptParams()
+	console.log('删除某届所有学生')
 }
 </script>
 
