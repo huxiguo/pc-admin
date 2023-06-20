@@ -7,18 +7,6 @@ import { ElMessage, ElTable } from 'element-plus'
 
 const adminStore = useAdminStore()
 
-// 状态选择器数据
-const statusSelectData = ref([
-	{
-		value: '0',
-		label: '禁用'
-	},
-	{
-		value: '1',
-		label: '启用'
-	}
-])
-
 // 分页器数据
 const currentPage = ref(1)
 const pageSize = ref(10)
