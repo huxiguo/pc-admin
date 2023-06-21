@@ -74,7 +74,7 @@ const handleSearchBtnClick = () => {
 }
 
 // 获取监视人表格数据
-onActivated(() => {
+onMounted(() => {
 	viewerStore.getAllViewerAction(
 		searchForm.value,
 		currentPage.value,

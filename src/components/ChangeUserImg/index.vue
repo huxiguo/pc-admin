@@ -14,7 +14,6 @@ const { total, deviceList } = storeToRefs(deviceStore)
 const userManngerStore = useUserManngerStore()
 
 const globalStore = useGlobalStore()
-const { lastDeviceId } = storeToRefs(globalStore)
 
 export interface ImgParameterProps {
 	stuNo: string
@@ -26,9 +25,13 @@ export interface ImgParameterProps {
 // 设备表单ref
 const step1FormRef = ref<FormInstance | null>(null)
 
+// 设备表单验证规则
+const step1FormRules = {
+	deviceId: [{ required: true, message: '请选择设备', trigger: 'change' }]
+}
 // 设备ID
 const step1FormData = reactive({
-	deviceId: lastDeviceId.value || []
+	deviceId: []
 })
 
 const parameter = ref<ImgParameterProps>({
@@ -47,17 +50,32 @@ const excelLimit = ref(1)
 // 当前步骤
 const activeStep = ref(1)
 
-const acceptParams = (params: ImgParameterProps) => {
-	parameter.value = { ...parameter.value, ...params }
+const acceptParams = (params: ImgParameterProps, deviceNos: string[]) => {
 	dialogVisible.value = true
+	parameter.value = { ...parameter.value, ...params }
+	nextTick(() => {
+		step1FormData.deviceId = deviceNos as any
+	})
 }
 // 上一步
 const prevStep = () => {
 	activeStep.value--
 }
 // 下一步
-const nextStep = () => {
-	activeStep.value++
+const nextStep = async () => {
+	let myValid = false
+	await step1FormRef.value?.validate(valid => {
+		myValid = valid
+	})
+	if (myValid) {
+		activeStep.value++
+	} else {
+		ElNotification({
+			title: '温馨提示',
+			message: '请先选择设备',
+			type: 'error'
+		})
+	}
 }
 // 选择器的显示隐藏
 const handleVisibleChange = (visible: boolean) => {
@@ -86,7 +104,7 @@ const beforeExcelUpload = (file: UploadRawFile) => {
 	const isImg = parameter.value.fileType!.includes(
 		file.type as File.ImageMimeType
 	)
-	const fileSize = file.size / 1024 / 1024 < 5
+	const fileSize = file.size / 1024 < 300
 	if (!isImg)
 		ElNotification({
 			title: '温馨提示',
@@ -97,7 +115,7 @@ const beforeExcelUpload = (file: UploadRawFile) => {
 		setTimeout(() => {
 			ElNotification({
 				title: '温馨提示',
-				message: `上传文件大小不能超过5MB！`,
+				message: `上传文件大小不能超过300kb，请压缩后重新上传`,
 				type: 'warning'
 			})
 		}, 0)
@@ -168,6 +186,7 @@ defineExpose({
 				:model="step1FormData"
 				v-show="activeStep === 1"
 				ref="step1FormRef"
+				:rules="step1FormRules"
 			>
 				<el-form-item label="选择设备" prop="deviceId">
 					<el-select
@@ -214,7 +233,7 @@ defineExpose({
 						<template #tip>
 							<slot name="tip">
 								<div class="el-upload__tip">
-									请上传 jpg,jpeg,png 标准格式文件
+									请上传 jpg,jpeg,png 标准格式文件,文件大小不超过300kb
 								</div>
 							</slot>
 						</template>

@@ -39,4 +39,9 @@ export namespace User {
 		userIds: number[]
 		deviceNos: string[]
 	}
+	// 删除单位所有用户接口参数
+	export interface ReqDeleteUserByUnits {
+		unitsId: number
+		deviceNos: string[]
+	}
 }

@@ -325,7 +325,7 @@ const comSearchForm = computed(() => {
 	}
 })
 // 进入页面获取所有用户列表
-onActivated(() => {
+onMounted(() => {
 	unitManngerStore.getUnitListAction()
 	deviceStore.getAllDeviceInfoAction({})
 	userManngerStore.getAllUserListAction(comSearchForm.value)
@@ -453,10 +453,10 @@ const deleteUserDialogRef = ref<InstanceType<typeof DeleteUserDialog> | null>(
  */
 const handleDeleteBtnClick = (rowData: any) => {
 	const params = {
-		lastDeviceId: lastDeviceId.value,
-		userIds: rowData.userId
+		deviceNos: lastDeviceId.value,
+		userIds: [rowData.userId]
 	}
-	deleteUserDialogRef.value?.acceptParams(rowData.userId)
+	deleteUserDialogRef.value?.acceptParams(params)
 }
 
 // 更改用户照片Ref
@@ -470,7 +470,7 @@ const handleChangeImg = (rowData: any) => {
 	const params = {
 		stuNo: rowData.schNo
 	}
-	changeUserImgDialogRef.value?.acceptParams(params)
+	changeUserImgDialogRef.value?.acceptParams(params, lastDeviceId.value)
 }
 
 // 导出用户数据

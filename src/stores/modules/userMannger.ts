@@ -72,6 +72,8 @@ export const useUserManngerStore = defineStore(
 		async function deleteUserAction(params: User.ReqDeleteUser) {
 			await deleteUser(params)
 		}
+		// 删除单位所有用户
+		// 删除某届所有学生
 		return {
 			total,
 			userInOutData,

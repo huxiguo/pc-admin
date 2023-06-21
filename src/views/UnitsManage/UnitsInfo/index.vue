@@ -27,7 +27,7 @@ const rules = reactive<FormRules>({
 })
 
 // 获取单位数据
-onActivated(() => {
+onMounted(() => {
 	unitManngerStore.getUnitListAction()
 })
 // 导出单位数据按钮回调

@@ -89,7 +89,7 @@ const rules = reactive<FormRules>({
 })
 
 // 获取表格数据
-onActivated(() => {
+onMounted(() => {
 	deviceStore.getAllDeviceInfoAction(
 		searchForm.value,
 		currentPage.value,

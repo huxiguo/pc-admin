@@ -30,7 +30,7 @@ const rules = reactive<FormRules>({
 })
 
 // 获取单位数据
-onActivated(() => {
+onMounted(() => {
 	menuStore.getAllMenuAction()
 })
 

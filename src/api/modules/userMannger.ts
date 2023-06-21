@@ -95,7 +95,7 @@ export const deleteSessionUser = (params: any) => {
 /**
  * 删除某单位用户
  */
-export const deleteUnitUser = (params: any) => {
+export const deleteUnitUser = (params: User.ReqDeleteUserByUnits) => {
 	const { unitsId, deviceNos } = params
 	return http.delete<any>(
 		'/user/delUserByUnits?unitsId=' +

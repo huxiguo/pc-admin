@@ -83,7 +83,7 @@ const multipleTableRef = ref<InstanceType<typeof ElTable>>()
 // table表格多选框数据
 const multipleSelection = ref<device[]>([])
 // 获取表格数据
-onActivated(() => {
+onMounted(() => {
 	deviceStore.getAllDeviceInfoAction(
 		searchForm.value,
 		currentPage.value,

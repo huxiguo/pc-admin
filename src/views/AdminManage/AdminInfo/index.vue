@@ -33,7 +33,7 @@ const rules = reactive<FormRules>({
 })
 
 // 获取表格数据
-onActivated(() => {
+onMounted(() => {
 	adminStore.getAllAdminAction(currentPage.value, pageSize.value)
 })
 
