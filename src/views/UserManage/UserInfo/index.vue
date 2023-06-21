@@ -78,24 +78,25 @@
 					>
 				</div>
 				<div class="header-button-ri">
-					<el-button type="primary" @click="addUser" :icon="Download">
-						添加用户
-					</el-button>
-					<el-button type="primary" :icon="Upload" @click="deleteUser"
-						>删除用户</el-button
-					>
-					<el-button type="primary" :icon="Upload" @click="deleteAllUserByUnit"
+					<el-button type="primary" @click="addUser"> 添加用户 </el-button>
+					<el-button type="danger" @click="deleteUser">删除用户</el-button>
+					<el-button type="danger" @click="deleteAllUserByUnit"
 						>删除单位所有用户</el-button
 					>
-					<el-button
-						type="primary"
-						:icon="Upload"
-						@click="deleteAllUserBySession"
+					<el-button type="danger" @click="deleteAllUserBySession"
 						>删除某届所有学生</el-button
 					>
 				</div>
 			</div>
-			<el-table :data="userList" border style="width: 100%">
+			<el-table
+				:data="userList"
+				border
+				style="width: 100%"
+				ref="multipleTableRef"
+				@selection-change="handleSelectionChange"
+			>
+				<!-- 选择框 -->
+				<el-table-column type="selection" width="55" align="center" />
 				<!-- 索引 -->
 				<el-table-column type="index" label="#" align="center" />
 				<!-- 学号 -->
@@ -257,7 +258,8 @@ import {
 	ElMessage,
 	ElMessageBox,
 	type FormInstance,
-	type FormRules
+	type FormRules,
+	ElTable
 } from 'element-plus'
 import type { User } from '@/global/user'
 import { useDownload } from '@/hooks/useDownload'
@@ -495,8 +497,21 @@ const addUser = () => {
 	addUserDialogRef.value?.acceptParams()
 }
 
+const multipleTableRef = ref<InstanceType<typeof ElTable>>()
+// 表格多选框数据
+const selectUsers = ref([])
+// 表格多选框
+const handleSelectionChange = (val: []) => {
+	selectUsers.value = val
+}
+
 // 选择设备删除用户
-const deleteUser = () => {
+const deleteUser = async () => {
+	const arr = ref<number[]>([])
+	selectUsers.value.forEach((item: any) => {
+		arr.value.push(item.userId)
+	})
+	deleteUserDialogRef.value?.acceptParams(arr.value)
 	console.log('选择设备删除用户')
 }
 const deleteUserByUnitRef = ref<InstanceType<typeof DeleteUserByUnit> | null>(

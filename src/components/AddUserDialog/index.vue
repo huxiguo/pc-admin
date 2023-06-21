@@ -4,11 +4,14 @@ import type { File } from '@/global/File'
 import { useUserManngerStore } from '@/stores/modules/userMannger'
 import { useUnitManngerStore } from '@/stores/modules/unitMannger'
 import { useDeviceStore } from '@/stores/modules/device'
+import { useGlobalStore } from '@/stores/modules/global'
 const unitManngerStore = useUnitManngerStore()
+const globalStore = useGlobalStore()
 const deviceStore = useDeviceStore()
 const userManngerStore = useUserManngerStore()
 const { classList } = storeToRefs(unitManngerStore)
 const { deviceList, total } = storeToRefs(deviceStore)
+const { lastDeviceId } = storeToRefs(globalStore)
 const dialogVisible = ref(false)
 
 // 级联选择器配置
@@ -25,7 +28,7 @@ const dialogForm = reactive({
 	schNo: '',
 	session: '',
 	unitsId: '',
-	deviceNos: [],
+	deviceNos: lastDeviceId || [],
 	role: ''
 })
 
@@ -35,9 +38,6 @@ const handleDeviceVisibleChange = (visible: boolean) => {
 		deviceStore.getAllDeviceInfoAction({}, 1, total.value)
 	}
 }
-
-// 选择设备回调
-const handleDeviceChange = () => {}
 
 // 表单验证规则
 const dialogFormRules = {}
@@ -115,6 +115,11 @@ const excelUploadSuccess = () => {
 		message: `上传成功！`,
 		type: 'success'
 	})
+}
+
+// 选择设备change事件
+const handleDeviceChange = (val: string[]) => {
+	globalStore.setLastDeviceIdAction(val)
 }
 
 defineExpose({
