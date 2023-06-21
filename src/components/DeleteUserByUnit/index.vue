@@ -2,10 +2,13 @@
 import { useDeviceStore } from '@/stores/modules/device'
 import { deleteUnitUser } from '@/api/modules/userMannger'
 import { useUnitManngerStore } from '@/stores/modules/unitMannger'
+import { useGlobalStore } from '@/stores/modules/global'
 const unitManngerStore = useUnitManngerStore()
+const globalStore = useGlobalStore()
 const deviceStore = useDeviceStore()
 const { deviceList, total } = storeToRefs(deviceStore)
 const { classList } = storeToRefs(unitManngerStore)
+const { lastDeviceId } = storeToRefs(globalStore)
 const handleDeviceVisibleChange = (visiable: boolean) => {
 	if (visiable) {
 		deviceStore.getAllDeviceInfoAction({}, 1, total.value)
@@ -18,7 +21,7 @@ const props = {
 	checkStrictly: true,
 	expandTrigger: 'hover' as const
 }
-const deviceNos = ref([])
+const deviceNos = ref(lastDeviceId || [])
 const unitsId = ref([])
 const dialogVisible = ref(false)
 const acceptParams = () => {
@@ -32,13 +35,17 @@ const handleBtnClick = async () => {
 	}
 	await deleteUnitUser(params)
 }
+// 选择设备change事件
+const handleDeviceChange = (val: string[]) => {
+	globalStore.setLastDeviceIdAction(val)
+}
 defineExpose({ acceptParams })
 </script>
 
 <template>
 	<el-dialog
 		class="dialogBox"
-		title="选择设备删除用户"
+		title="选择班级删除用户"
 		v-model="dialogVisible"
 		:destroy-on-close="true"
 		width="500"
@@ -59,6 +66,7 @@ defineExpose({ acceptParams })
 			clearable
 			multiple
 			@visible-change="handleDeviceVisibleChange"
+			@change="handleDeviceChange"
 		>
 			<el-option
 				v-for="item in deviceList"

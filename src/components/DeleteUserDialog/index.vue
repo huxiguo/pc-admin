@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { useDeviceStore } from '@/stores/modules/device'
 import { useUserManngerStore } from '@/stores/modules/userMannger'
+import { useGlobalStore } from '@/stores/modules/global'
+const globalStore = useGlobalStore()
 const deviceStore = useDeviceStore()
 const userManngerStore = useUserManngerStore()
 const { deviceList, total } = storeToRefs(deviceStore)
+const { lastDeviceId } = storeToRefs(globalStore)
 const dialogVisible = ref(false)
 const userIds = ref('')
-const deviceNos = ref([])
+const deviceNos = ref(lastDeviceId || [])
 const handleDeviceVisibleChange = (visiable: boolean) => {
 	if (visiable) {
 		deviceStore.getAllDeviceInfoAction({}, 1, total.value)
@@ -24,6 +27,10 @@ const handleBtnClick = async () => {
 		deviceNos: deviceNos.value
 	}
 	await userManngerStore.deleteUserAction(params)
+}
+// 选择设备change事件
+const handleDeviceChange = (val: string[]) => {
+	globalStore.setLastDeviceIdAction(val)
 }
 defineExpose({ acceptParams })
 </script>
@@ -45,6 +52,7 @@ defineExpose({ acceptParams })
 			clearable
 			multiple
 			@visible-change="handleDeviceVisibleChange"
+			@change="handleDeviceChange"
 		>
 			<el-option
 				v-for="item in deviceList"
