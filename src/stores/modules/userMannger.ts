@@ -69,7 +69,7 @@ export const useUserManngerStore = defineStore(
 			await addUser(params)
 		}
 		// 删除用户
-		async function deleteUserAction(params: any) {
+		async function deleteUserAction(params: User.ReqDeleteUser) {
 			await deleteUser(params)
 		}
 		return {

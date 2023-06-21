@@ -8,7 +8,6 @@ const globalStore = useGlobalStore()
 const deviceStore = useDeviceStore()
 const { deviceList, total } = storeToRefs(deviceStore)
 const { classList } = storeToRefs(unitManngerStore)
-const { lastDeviceId } = storeToRefs(globalStore)
 const handleDeviceVisibleChange = (visiable: boolean) => {
 	if (visiable) {
 		deviceStore.getAllDeviceInfoAction({}, 1, total.value)
@@ -21,11 +20,14 @@ const props = {
 	checkStrictly: true,
 	expandTrigger: 'hover' as const
 }
-const deviceNos = ref(lastDeviceId || [])
+const deviceNos = ref<string[]>([])
 const unitsId = ref([])
 const dialogVisible = ref(false)
-const acceptParams = () => {
+const acceptParams = (params: string[]) => {
 	dialogVisible.value = true
+	nextTick(() => {
+		deviceNos.value = params
+	})
 }
 const handleBtnClick = async () => {
 	// 构造参数取出班级ID最后一个

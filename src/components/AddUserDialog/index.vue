@@ -17,7 +17,6 @@ const deviceStore = useDeviceStore()
 const userManngerStore = useUserManngerStore()
 const { classList } = storeToRefs(unitManngerStore)
 const { deviceList, total } = storeToRefs(deviceStore)
-const { lastDeviceId } = storeToRefs(globalStore)
 const dialogVisible = ref(false)
 
 // 表单Ref
@@ -37,7 +36,7 @@ const dialogForm = reactive({
 	schNo: '',
 	session: '',
 	unitsId: '',
-	deviceNos: lastDeviceId || [],
+	deviceNos: [],
 	role: '0'
 })
 
@@ -58,9 +57,11 @@ const dialogFormRules: FormRules = {
 	role: [{ required: true, message: '请选择角色', trigger: 'change' }]
 }
 
-const acceptParams = () => {
-	console.log('acceptParams')
+const acceptParams = (params: string[]) => {
 	dialogVisible.value = true
+	nextTick(() => {
+		dialogForm.deviceNos = params as any
+	})
 }
 
 // 文件上传

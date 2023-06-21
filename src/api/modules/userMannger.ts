@@ -69,7 +69,7 @@ export const addUser = (params: FormData) => {
 /**
  * 删除用户
  */
-export const deleteUser = (params: any) => {
+export const deleteUser = (params: User.ReqDeleteUser) => {
 	const { userIds, deviceNos } = params
 	return http.delete<any>(
 		'/user/delUserByIds?userIds=' +

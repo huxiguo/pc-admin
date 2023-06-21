@@ -16,7 +16,6 @@ export namespace User {
 		schNo?: string
 		unitsName?: string
 	}
-
 	// 编辑用户信息接口参数
 	export interface ReqEditUserInfo {
 		name: string
@@ -34,5 +33,10 @@ export namespace User {
 	export interface ResUserList {
 		total: number
 		recordList: any[]
+	}
+	// 删除用户接口参数
+	export interface ReqDeleteUser {
+		userIds: number[]
+		deviceNos: string[]
 	}
 }

@@ -92,7 +92,6 @@
 				:data="userList"
 				border
 				style="width: 100%"
-				ref="multipleTableRef"
 				@selection-change="handleSelectionChange"
 			>
 				<!-- 选择框 -->
@@ -254,13 +253,8 @@ import {
 	Download,
 	Upload
 } from '@element-plus/icons-vue'
-import {
-	ElMessage,
-	ElMessageBox,
-	type FormInstance,
-	type FormRules,
-	ElTable
-} from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
+import { ElNotification, ElMessage } from 'element-plus'
 import type { User } from '@/global/user'
 import { useDownload } from '@/hooks/useDownload'
 import { useUnitManngerStore } from '@/stores/modules/unitMannger'
@@ -458,8 +452,11 @@ const deleteUserDialogRef = ref<InstanceType<typeof DeleteUserDialog> | null>(
  * @param rowData 行内数据
  */
 const handleDeleteBtnClick = (rowData: any) => {
+	const params = {
+		lastDeviceId: lastDeviceId.value,
+		userIds: rowData.userId
+	}
 	deleteUserDialogRef.value?.acceptParams(rowData.userId)
-	console.log('删除用户')
 }
 
 // 更改用户照片Ref
@@ -497,25 +494,31 @@ const addUserDialogRef = ref<InstanceType<typeof AddUserDialog> | null>(null)
 // 选择设备添加用户
 const addUser = () => {
 	console.log('选择设备添加用户')
-	addUserDialogRef.value?.acceptParams()
+	addUserDialogRef.value?.acceptParams(lastDeviceId.value)
 }
-
-const multipleTableRef = ref<InstanceType<typeof ElTable>>()
 // 表格多选框数据
-const selectUsers = ref([])
+const selectUsers = ref<number[]>([])
 // 表格多选框
 const handleSelectionChange = (val: []) => {
-	selectUsers.value = val
+	selectUsers.value = val.map((item: any) => item.userId)
 }
 
 // 选择设备删除用户
 const deleteUser = async () => {
-	const arr = ref<number[]>([])
-	selectUsers.value.forEach((item: any) => {
-		arr.value.push(item.userId)
-	})
-	deleteUserDialogRef.value?.acceptParams(arr.value)
-	console.log('选择设备删除用户')
+	if (selectUsers.value.length === 0) {
+		ElNotification({
+			title: '温馨提示',
+			message: '请先选择用户！',
+			type: 'warning'
+		})
+		return
+	} else {
+		const params = {
+			deviceNos: lastDeviceId.value,
+			userIds: selectUsers.value
+		}
+		deleteUserDialogRef.value?.acceptParams(params)
+	}
 }
 const deleteUserByUnitRef = ref<InstanceType<typeof DeleteUserByUnit> | null>(
 	null
@@ -524,7 +527,7 @@ const deleteUserByUnitRef = ref<InstanceType<typeof DeleteUserByUnit> | null>(
 // 删除单位所有用户
 const deleteAllUserByUnit = () => {
 	console.log('删除单位所有用户')
-	deleteUserByUnitRef.value?.acceptParams()
+	deleteUserByUnitRef.value?.acceptParams(lastDeviceId.value)
 }
 
 const deleteUserBySessionRef = ref<InstanceType<
