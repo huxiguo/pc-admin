@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import type { UploadRequestOptions, UploadRawFile } from 'element-plus'
+import { ElNotification } from 'element-plus'
+import type {
+	FormInstance,
+	UploadRequestOptions,
+	UploadRawFile,
+	FormRules
+} from 'element-plus'
 import type { File } from '@/global/File'
 import { useUserManngerStore } from '@/stores/modules/userMannger'
 import { useUnitManngerStore } from '@/stores/modules/unitMannger'
@@ -13,6 +19,9 @@ const { classList } = storeToRefs(unitManngerStore)
 const { deviceList, total } = storeToRefs(deviceStore)
 const { lastDeviceId } = storeToRefs(globalStore)
 const dialogVisible = ref(false)
+
+// 表单Ref
+const dialogFormRef = ref<FormInstance>()
 
 // 级联选择器配置
 // 班级选项的配置
@@ -29,7 +38,7 @@ const dialogForm = reactive({
 	session: '',
 	unitsId: '',
 	deviceNos: lastDeviceId || [],
-	role: ''
+	role: '0'
 })
 
 // 设备选择器请求数据
@@ -40,7 +49,14 @@ const handleDeviceVisibleChange = (visible: boolean) => {
 }
 
 // 表单验证规则
-const dialogFormRules = {}
+const dialogFormRules: FormRules = {
+	name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+	schNo: [{ required: true, message: '请输入学号', trigger: 'blur' }],
+	session: [{ required: true, message: '请输入届', trigger: 'blur' }],
+	unitsId: [{ required: true, message: '请选择班级', trigger: 'change' }],
+	deviceNos: [{ required: true, message: '请选择设备', trigger: 'change' }],
+	role: [{ required: true, message: '请选择角色', trigger: 'change' }]
+}
 
 const acceptParams = () => {
 	console.log('acceptParams')
@@ -68,22 +84,43 @@ const uploadExcel = async (param: UploadRequestOptions) => {
  * @description 文件上传之前判断
  * @param file 上传的文件
  * */
-const beforeExcelUpload = (file: UploadRawFile) => {
+const beforeExcelUpload = async (file: UploadRawFile) => {
 	const isImg = ['image/jpeg', 'image/png', 'image/jpg'].includes(
 		file.type as File.ImageMimeType
 	)
-	const fileSize = file.size / 1024 / 1024 < 5
-	if (!isImg)
+	// 文件大小限制不超过300kb
+	const fileSize = file.size / 1024 < 300
+
+	let isValidate = true
+	console.log(11111, isValidate)
+	// 判断表单验证是否通过
+	await dialogFormRef.value?.validate(valid => {
+		isValidate = valid
+		console.log(22222, valid)
+	})
+	console.log(isValidate)
+
+	if (!isValidate)
 		ElNotification({
 			title: '温馨提示',
-			message: '上传文件只能是 jpg jpeg png 格式！',
+			message: '请填写完整的表单信息！',
 			type: 'warning'
 		})
+
+	if (!isImg)
+		setTimeout(() => {
+			ElNotification({
+				title: '温馨提示',
+				message: '上传文件只能是 jpg jpeg png 格式！',
+				type: 'warning'
+			})
+		}, 0)
+
 	if (!fileSize)
 		setTimeout(() => {
 			ElNotification({
 				title: '温馨提示',
-				message: `上传文件大小不能超过5MB！`,
+				message: `上传文件大小不能超过300kb！`,
 				type: 'warning'
 			})
 		}, 0)
@@ -122,6 +159,12 @@ const handleDeviceChange = (val: string[]) => {
 	globalStore.setLastDeviceIdAction(val)
 }
 
+// 关闭弹窗
+const handleClose = () => {
+	// 重置表单
+	dialogFormRef.value?.resetFields()
+}
+
 defineExpose({
 	acceptParams
 })
@@ -133,6 +176,7 @@ defineExpose({
 		title="选择设备添加用户"
 		v-model="dialogVisible"
 		:destroy-on-close="true"
+		@close="handleClose"
 		width="500"
 		draggable
 		center

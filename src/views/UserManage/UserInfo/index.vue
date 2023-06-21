@@ -266,6 +266,7 @@ import { useDownload } from '@/hooks/useDownload'
 import { useUnitManngerStore } from '@/stores/modules/unitMannger'
 import { useUserManngerStore } from '@/stores/modules/userMannger'
 import { useDeviceStore } from '@/stores/modules/device'
+import { useGlobalStore } from '@/stores/modules/global'
 import ChangeUserImg from '@/components/ChangeUserImg/index.vue'
 import ImportUserExcel from '@/components/ImportUserExcel/index.vue'
 import AddUserDialog from '@/components/AddUserDialog/index.vue'
@@ -290,9 +291,11 @@ const handleImgClick = (url: string) => {
 const userManngerStore = useUserManngerStore()
 const unitManngerStore = useUnitManngerStore()
 const deviceStore = useDeviceStore()
+const globalStore = useGlobalStore()
 
 const { classList } = storeToRefs(unitManngerStore)
 const { userList, userTotal, defaultRole } = storeToRefs(userManngerStore)
+const { lastDeviceId } = storeToRefs(globalStore)
 // 分页数据
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -486,7 +489,7 @@ const importDialogRef = ref<InstanceType<typeof ImportUserExcel> | null>(null)
 // 上传用户数据
 const handleImportUserClick = () => {
 	console.log('上传用户数据')
-	importDialogRef.value?.acceptParams()
+	importDialogRef.value?.acceptParams(lastDeviceId.value)
 }
 
 const addUserDialogRef = ref<InstanceType<typeof AddUserDialog> | null>(null)

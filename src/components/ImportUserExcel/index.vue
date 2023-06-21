@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormInstance } from 'element-plus'
+import type { UploadInstance, FormInstance, FormRules } from 'element-plus'
 import { Link, Picture } from '@element-plus/icons-vue'
 import { ElNotification } from 'element-plus'
 import type { UploadRequestOptions, UploadRawFile } from 'element-plus'
@@ -14,7 +14,6 @@ const { total, deviceList } = storeToRefs(deviceStore)
 const userManngerStore = useUserManngerStore()
 
 const globalStore = useGlobalStore()
-const { lastDeviceId } = storeToRefs(globalStore)
 
 export interface ImgParameterProps {
 	fileType?: File.ExcelMimeType[] // 上传文件的类型
@@ -25,10 +24,17 @@ export interface ImgParameterProps {
 // 设备表单ref
 const step1FormRef = ref<FormInstance | null>(null)
 
+// 上传组件ref
+const uploadRef = ref<UploadInstance | null>(null)
 // 设备ID
 const step1FormData = reactive({
-	deviceId: lastDeviceId.value || []
+	deviceId: []
 })
+
+// 表单验证规则
+const step1FormRules: FormRules = {
+	deviceId: [{ required: true, message: '请选择设备', trigger: 'change' }]
+}
 
 const parameter = ref<ImgParameterProps>({
 	// excel类型
@@ -48,16 +54,31 @@ const excelLimit = ref(1)
 // 当前步骤
 const activeStep = ref(1)
 
-const acceptParams = () => {
+const acceptParams = (params: string[]) => {
 	dialogVisible.value = true
+	nextTick(() => {
+		step1FormData.deviceId = params as any
+	})
 }
 // 上一步
 const prevStep = () => {
 	activeStep.value--
 }
 // 下一步
-const nextStep = () => {
-	activeStep.value++
+const nextStep = async () => {
+	// 判断表单是否验证通过
+	await step1FormRef.value?.validate(valid => {
+		// 如果验证通过
+		if (valid) {
+			activeStep.value++
+		} else {
+			ElNotification({
+				title: '温馨提示',
+				message: '请先选择设备',
+				type: 'warning'
+			})
+		}
+	})
 }
 // 选择器的显示隐藏
 const handleVisibleChange = (visible: boolean) => {
@@ -66,14 +87,11 @@ const handleVisibleChange = (visible: boolean) => {
 	}
 }
 
-// 父组件传递的学号参数
-
 // 文件上传
 const uploadExcel = async (param: UploadRequestOptions) => {
 	let imgFormData = new FormData()
 	imgFormData.append('file', param.file)
 	imgFormData.append('deviceNos', step1FormData.deviceId as any)
-	console.log(step1FormData.deviceId)
 	await parameter.value.importApi!(imgFormData)
 	parameter.value.getTableList && (await parameter.value.getTableList())
 	dialogVisible.value = false
@@ -136,11 +154,17 @@ const excelUploadSuccess = () => {
 const handleClosed = () => {
 	activeStep.value = 1
 	step1FormRef.value?.resetFields()
+	uploadRef.value?.clearFiles()
 }
 
 // 选择设备change事件
 const handleDeviceChange = (val: string[]) => {
 	globalStore.setLastDeviceIdAction(val)
+}
+
+// 选择设备清空Tag
+const handleSeleceClear = () => {
+	globalStore.removeAllLastDeviceIdAction()
 }
 
 defineExpose({
@@ -152,8 +176,8 @@ defineExpose({
 	<el-dialog
 		class="dialogBox"
 		title="上传文件"
+		destroy-on-close
 		v-model="dialogVisible"
-		:destroy-on-close="true"
 		@closed="handleClosed"
 		width="500"
 		draggable
@@ -169,6 +193,7 @@ defineExpose({
 				:model="step1FormData"
 				v-show="activeStep === 1"
 				ref="step1FormRef"
+				:rules="step1FormRules"
 			>
 				<el-form-item label="选择设备" prop="deviceId">
 					<el-select
@@ -179,6 +204,7 @@ defineExpose({
 						multiple
 						@visible-change="handleVisibleChange"
 						@change="handleDeviceChange"
+						@clear="handleSeleceClear"
 					>
 						<el-option
 							v-for="item in deviceList"
@@ -194,6 +220,7 @@ defineExpose({
 				<!-- 步骤二：上传图片 -->
 				<el-form-item label="用户excel上传 :">
 					<el-upload
+						ref="uploadRef"
 						action="#"
 						style="width: 80%"
 						:drag="true"

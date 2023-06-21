@@ -21,6 +21,23 @@ export const useGlobalStore = defineStore(
 		}
 
 		/**
+		 * 移除传入的设备ID
+		 */
+		function removeLastDeviceIdAction(value: string) {
+			const index = lastDeviceId.value.findIndex(item => item === value)
+			if (index !== -1) {
+				lastDeviceId.value.splice(index, 1)
+			}
+		}
+
+		/**
+		 * 移除全部的设备ID
+		 */
+		function removeAllLastDeviceIdAction() {
+			lastDeviceId.value = []
+		}
+
+		/**
 		 * 切换侧边栏显示与隐藏
 		 * @param value 是否隐藏侧边栏
 		 */
@@ -40,7 +57,9 @@ export const useGlobalStore = defineStore(
 			lastDeviceId,
 			setIsCollapseAction,
 			setActivePathAction,
-			setLastDeviceIdAction
+			setLastDeviceIdAction,
+			removeLastDeviceIdAction,
+			removeAllLastDeviceIdAction
 		}
 	},
 	{
