@@ -1,10 +1,20 @@
 <script setup lang="ts">
-import type { FormRules, FormInstance } from 'element-plus'
-import { Edit, Delete, Search } from '@element-plus/icons-vue'
+import type { FormInstance } from 'element-plus'
+import { ElMessage } from 'element-plus'
+import { Edit, Delete, Search, View } from '@element-plus/icons-vue'
 import { useViewerStore } from '@/stores/modules/viewer'
-import type { searchForm, dialogForm } from './Interface/form'
+import type { searchForm, addUserDialogForm } from './Interface/form'
 
 const viewerStore = useViewerStore()
+
+const dialogVisible = ref(false)
+
+// 添加被监视人对话框表单数据
+const addUserDialogForm = ref<addUserDialogForm>({
+	id: 0,
+	viewId: 0,
+	userId: 0
+})
 
 // 分页器数据
 const currentPage = ref(1)
@@ -71,6 +81,25 @@ onActivated(() => {
 		pageSize.value
 	)
 })
+
+// 删除监视人按钮回调
+const handleDeleteClick = async (id: number) => {
+	await viewerStore.deleteViewerAction([id])
+	ElMessage.success('删除成功')
+	await viewerStore.getAllViewerAction(
+		searchForm.value,
+		currentPage.value,
+		pageSize.value
+	)
+}
+
+// 点击设置被监视人按钮的回调
+const handleAddBeUserClick = (viewer: any) => {
+	dialogVisible.value = true
+	console.log(viewer)
+	// addUserDialogForm.viewId=viewer.viewId
+	// addUserDialogForm.id = viewer.
+}
 </script>
 
 <template>
@@ -192,7 +221,16 @@ onActivated(() => {
 				<!-- 头像 -->
 				<el-table-column label="头像" width="180" align="center">
 					<template #default="{ row }">
-						<img :src="row.avatar" alt="" />
+						<el-image
+							:src="row.avatar"
+							:preview-src-list="[row.avatar]"
+							style="width: 80px"
+							hide-on-click-modal
+							close-on-press-escape
+							preview-teleported
+							:z-index="9999"
+							fit="cover"
+						/>
 					</template>
 				</el-table-column>
 				<!-- 联系电话 -->
@@ -218,13 +256,21 @@ onActivated(() => {
 				</el-table-column>
 				<!-- 操作 -->
 				<el-table-column label="操作" align="center" width="180px">
-					<template #default="scope">
+					<template #default="{ row }">
 						<div class="perate">
 							<el-button text type="primary" :icon="Edit">编辑</el-button>
+							<el-button
+								text
+								type="primary"
+								:icon="View"
+								@click="handleAddBeUserClick(row)"
+								>设置被监视人</el-button
+							>
 							<el-popconfirm
-								title="是否删除该设备?"
+								title="是否删除该监视人?"
 								icon-color="#ff4949"
 								icon="WarnTriangleFilled"
+								@confirm="handleDeleteClick(row.viewId)"
 							>
 								<template #reference>
 									<el-button text type="primary" :icon="Delete">删除</el-button>
@@ -235,6 +281,31 @@ onActivated(() => {
 				</el-table-column>
 			</el-table>
 		</div>
+		<!-- 设置被监视人对话框 -->
+		<el-dialog
+			v-model="dialogVisible"
+			title="设置被监视人"
+			width="30%"
+			class="dialogBox"
+			center
+		>
+			<el-form :model="addUserDialogForm">
+				<el-form-item label="请输入被监视人的id：">
+					<el-input
+						v-model="addUserDialogForm.userId"
+						placeholder="请输入被监视人id"
+					></el-input>
+				</el-form-item>
+			</el-form>
+			<template #footer>
+				<span class="dialog-footer">
+					<el-button @click="dialogVisible = false">取消</el-button>
+					<el-button type="primary" @click="dialogVisible = false">
+						确定
+					</el-button>
+				</span>
+			</template>
+		</el-dialog>
 	</div>
 </template>
 
@@ -252,8 +323,9 @@ onActivated(() => {
 .perate {
 	display: flex;
 	justify-content: center;
+	flex-direction: column;
 	.el-button {
-		padding: 0;
+		margin-left: 0;
 	}
 }
 </style>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useMenuStore } from '@/stores/modules/menu'
-import { Plus, Delete, Download, Upload } from '@element-plus/icons-vue'
+import { Plus, Delete } from '@element-plus/icons-vue'
 import type { FormRules, FormInstance } from 'element-plus'
 import type { dialogForm } from './Interface/form.d'
 import { ElMessage } from 'element-plus'

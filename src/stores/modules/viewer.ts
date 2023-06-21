@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import piniaPersistConfig from '@/config/piniaPersist'
 import type { Viewer } from '@/global/viewer'
-import { getAllViewer } from '@/api/modules/viewer'
+import { getAllViewer, deleteViewer } from '@/api/modules/viewer'
 
 export const useViewerStore = defineStore(
 	'viewer',
@@ -20,10 +20,15 @@ export const useViewerStore = defineStore(
 			total.value = result.total
 			viewerList.value = result.viewerList
 		}
+		// 删除监视人
+		async function deleteViewerAction(params: Viewer.ReqDelViewer) {
+			await deleteViewer(params)
+		}
 		return {
 			total,
 			viewerList,
-			getAllViewerAction
+			getAllViewerAction,
+			deleteViewerAction
 		}
 	},
 	{
