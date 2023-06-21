@@ -226,7 +226,16 @@ const handleConfirmClick = async (formEl: FormInstance | undefined) => {
 				<!-- 头像 -->
 				<el-table-column label="头像" width="250" align="center">
 					<template #default="{ row }">
-						<img :src="row.avatar" alt="" style="width: 80px" />
+						<el-image
+							:src="row.avatar"
+							:preview-src-list="[row.avatar]"
+							style="width: 80px"
+							hide-on-click-modal
+							close-on-press-escape
+							preview-teleported
+							:z-index="9999"
+							fit="cover"
+						/>
 					</template>
 				</el-table-column>
 				<!-- 操作 -->
