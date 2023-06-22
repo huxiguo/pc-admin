@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FormInstance } from 'element-plus'
-import { ElNotification } from 'element-plus'
+import { ElMessage, ElNotification } from 'element-plus'
 import type { User } from '@/global/user'
 import { useDeviceStore } from '@/stores/modules/device'
 import { useUserManngerStore } from '@/stores/modules/userMannger'
@@ -62,6 +62,11 @@ const handleBtnClick = async () => {
 			deviceNos: deviceForm.deviceNos
 		}
 		await userManngerStore.deleteUserAction(params)
+		ElMessage({
+			message: '删除成功',
+			type: 'success'
+		})
+		await userManngerStore.getAllUserListAction()
 		dialogVisible.value = false
 	} else {
 		// 表单校验不通过

@@ -109,14 +109,16 @@ const beforeExcelUpload = (file: UploadRawFile) => {
 		ElNotification({
 			title: '温馨提示',
 			message: '上传文件只能是 jpg jpeg png 格式！',
-			type: 'warning'
+			type: 'warning',
+			zIndex: 3000
 		})
 	if (!fileSize)
 		setTimeout(() => {
 			ElNotification({
 				title: '温馨提示',
 				message: `上传文件大小不能超过300kb，请压缩后重新上传`,
-				type: 'warning'
+				type: 'warning',
+				zIndex: 3000
 			})
 		}, 0)
 	return isImg && fileSize
@@ -127,7 +129,8 @@ const handleExceed = () => {
 	ElNotification({
 		title: '温馨提示',
 		message: '最多只能上传一个文件！',
-		type: 'warning'
+		type: 'warning',
+		zIndex: 3000
 	})
 }
 
@@ -136,7 +139,8 @@ const excelUploadError = () => {
 	ElNotification({
 		title: '温馨提示',
 		message: `上传失败，请您重新上传！`,
-		type: 'error'
+		type: 'error',
+		zIndex: 3000
 	})
 }
 
@@ -145,7 +149,8 @@ const excelUploadSuccess = () => {
 	ElNotification({
 		title: '温馨提示',
 		message: `上传成功！`,
-		type: 'success'
+		type: 'success',
+		zIndex: 3000
 	})
 }
 

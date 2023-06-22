@@ -485,7 +485,6 @@ const downloadFile = async () => {
 const importDialogRef = ref<InstanceType<typeof ImportUserExcel> | null>(null)
 // 上传用户数据
 const handleImportUserClick = () => {
-	console.log('上传用户数据')
 	importDialogRef.value?.acceptParams(lastDeviceId.value)
 }
 
@@ -493,7 +492,6 @@ const addUserDialogRef = ref<InstanceType<typeof AddUserDialog> | null>(null)
 
 // 选择设备添加用户
 const addUser = () => {
-	console.log('选择设备添加用户')
 	addUserDialogRef.value?.acceptParams(lastDeviceId.value)
 }
 // 表格多选框数据
@@ -526,7 +524,6 @@ const deleteUserByUnitRef = ref<InstanceType<typeof DeleteUserByUnit> | null>(
 
 // 删除单位所有用户
 const deleteAllUserByUnit = () => {
-	console.log('删除单位所有用户')
 	deleteUserByUnitRef.value?.acceptParams(lastDeviceId.value)
 }
 
@@ -535,8 +532,7 @@ const deleteUserBySessionRef = ref<InstanceType<
 > | null>(null)
 // 删除某届所有学生
 const deleteAllUserBySession = () => {
-	deleteUserBySessionRef.value?.acceptParams()
-	console.log('删除某届所有学生')
+	deleteUserBySessionRef.value?.acceptParams(lastDeviceId.value)
 }
 </script>
 

@@ -9,7 +9,9 @@ import {
 	editUserFace,
 	importUserInfo,
 	addUser,
-	deleteUser
+	deleteUser,
+	deleteUnitUser,
+	deleteSessionUser
 } from '@/api/modules/userMannger'
 
 export const useUserManngerStore = defineStore(
@@ -73,7 +75,15 @@ export const useUserManngerStore = defineStore(
 			await deleteUser(params)
 		}
 		// 删除单位所有用户
+		async function deleteUserByUnitsAction(params: User.ReqDeleteUserByUnits) {
+			await deleteUnitUser(params)
+		}
 		// 删除某届所有学生
+		async function deleteUserBySessionAction(
+			params: User.ReqDeleteUserBySession
+		) {
+			await deleteSessionUser(params)
+		}
 		return {
 			total,
 			userInOutData,
@@ -88,7 +98,9 @@ export const useUserManngerStore = defineStore(
 			editUserFaceAction,
 			importUserInfoAction,
 			addUserAction,
-			deleteUserAction
+			deleteUserAction,
+			deleteUserByUnitsAction,
+			deleteUserBySessionAction
 		}
 	},
 	{

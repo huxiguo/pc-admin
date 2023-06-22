@@ -142,16 +142,14 @@ const handleSelectionChange = (val: device[]) => {
 	multipleSelection.value = val
 }
 // 表格操作栏switch点击回调
-const handleSwitchClick = (row: device) => {
+const handleSwitchClick = async (row: device) => {
 	if (row.status === '1') {
-		console.log('发送连接请求')
 		// 将row的ID构造成数组
 		const idArr = [row.id]
-		deviceStore.runDeviceAction(idArr)
+		await deviceStore.runDeviceAction(idArr)
 	} else if (row.status === '0') {
-		console.log('发送关闭请求')
 		const idArr = [row.id]
-		deviceStore.closeDeviceAction(idArr)
+		await deviceStore.closeDeviceAction(idArr)
 	}
 }
 // 取消选中按钮的回调

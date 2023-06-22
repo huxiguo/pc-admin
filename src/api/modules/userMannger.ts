@@ -82,7 +82,7 @@ export const deleteUser = (params: User.ReqDeleteUser) => {
 /**
  * 删除某届用户
  */
-export const deleteSessionUser = (params: any) => {
+export const deleteSessionUser = (params: User.ReqDeleteUserBySession) => {
 	const { session, deviceNos } = params
 	return http.post<any>(
 		'/user/delUsersBySession?session=' +

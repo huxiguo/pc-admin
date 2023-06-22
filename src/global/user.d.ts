@@ -44,4 +44,9 @@ export namespace User {
 		unitsId: number
 		deviceNos: string[]
 	}
+	// 删除某届所有学生接口参数
+	export interface ReqDeleteUserBySession {
+		session: number
+		deviceNos: string[]
+	}
 }
