@@ -1,6 +1,8 @@
 <template>
 	<el-main>
-		<router-view> </router-view>
+		<transition appear name="fade-transform" mode="out-in">
+			<router-view />
+		</transition>
 	</el-main>
 	<el-footer>
 		<Footer />
