@@ -95,7 +95,13 @@
 			</el-form>
 		</div>
 		<div class="card table-main">
-			<el-table :data="userInOutData" border style="width: 100%">
+			<el-table
+				:data="userInOutData"
+				border
+				style="width: 100%"
+				@selection-change="handleSelectionChange"
+			>
+				<el-table-column type="selection" width="55" />
 				<el-table-column type="index" label="#" align="center" />
 				<el-table-column
 					prop="user.schNo"
@@ -165,6 +171,7 @@
 </template>
 
 <script setup lang="ts">
+import { ElNotification } from 'element-plus'
 import { useUnitManngerStore } from '@/stores/modules/unitMannger'
 import { useUserManngerStore } from '@/stores/modules/userMannger'
 import { deleteAccessRecord } from '@/api/modules/userMannger'
@@ -265,13 +272,34 @@ const comSearchForm = computed(() => {
 onMounted(async () => {
 	await userMannger.getUserInOutListAction(comSearchForm.value)
 })
+
+// 表格选中的数据
+const selection = ref([])
+
+// 表格选中的数据改变时触发
+const handleSelectionChange = (val: any) => {
+	// 将所有的选中的数据的recordId放入selection中
+	selection.value = val.map((item: any) => item.recordId)
+}
+
 /**
  * 删除按钮点击事件
  */
 const handleDeleteBtnClick = async () => {
-	console.log('删除按钮点击事件')
-	const arr = [10048]
-	await deleteAccessRecord(arr)
+	// 判断是否选中了数据
+	if (selection.value.length === 0) {
+		return ElNotification({
+			title: '提示',
+			message: '请选择要删除的记录',
+			type: 'warning'
+		})
+	}
+	// 删除选中的数据
+	await userMannger.deleteAccessRecordAction(selection.value)
+	// 清空选中的数据
+	selection.value = []
+	// 重新获取数据
+	await userMannger.getUserInOutListAction(comSearchForm.value)
 }
 
 /**

@@ -11,7 +11,8 @@ import {
 	addUser,
 	deleteUser,
 	deleteUnitUser,
-	deleteSessionUser
+	deleteSessionUser,
+	deleteAccessRecord
 } from '@/api/modules/userMannger'
 
 export const useUserManngerStore = defineStore(
@@ -84,6 +85,10 @@ export const useUserManngerStore = defineStore(
 		) {
 			await deleteSessionUser(params)
 		}
+		// 删除用户出入记录
+		async function deleteAccessRecordAction(params: number[]) {
+			await deleteAccessRecord(params)
+		}
 		return {
 			total,
 			userInOutData,
@@ -100,7 +105,8 @@ export const useUserManngerStore = defineStore(
 			addUserAction,
 			deleteUserAction,
 			deleteUserByUnitsAction,
-			deleteUserBySessionAction
+			deleteUserBySessionAction,
+			deleteAccessRecordAction
 		}
 	},
 	{

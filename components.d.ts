@@ -36,7 +36,6 @@ declare module '@vue/runtime-core' {
     ElHeader: typeof import('element-plus/es')['ElHeader']
     ElIcon: typeof import('element-plus/es')['ElIcon']
     ElImage: typeof import('element-plus/es')['ElImage']
-    ElImg: typeof import('element-plus/es')['ElImg']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElMain: typeof import('element-plus/es')['ElMain']
     ElMenu: typeof import('element-plus/es')['ElMenu']
@@ -57,12 +56,9 @@ declare module '@vue/runtime-core' {
     ElTag: typeof import('element-plus/es')['ElTag']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     IconSelector: typeof import('./src/components/IconSelector/index.vue')['default']
-    Img: typeof import('./src/components/UpLoad/Img.vue')['default']
     ImportExcel: typeof import('./src/components/ImportExcel/index.vue')['default']
     ImportUserExcel: typeof import('./src/components/ImportUserExcel/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    ScrollSelect: typeof import('./src/components/ScrollSelect/index.vue')['default']
-    UploadImg: typeof import('./src/components/UpLoad/uploadImg.vue')['default']
   }
 }

@@ -18,7 +18,7 @@ export const getUserInOutInfo = (
 /**
  * 删除用户出入记录
  */
-export const deleteAccessRecord = (params: any) => {
+export const deleteAccessRecord = (params: number[]) => {
 	return http.delete<any>('/access/delAccessRecord', params)
 }
 // 获取所有用户信息

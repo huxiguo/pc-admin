@@ -1,8 +1,10 @@
 <template>
 	<el-main>
-		<transition appear name="fade-transform" mode="out-in">
-			<router-view />
-		</transition>
+		<RouterView v-slot="{ Component }">
+			<transition appear name="fade-transform" mode="out-in">
+				<component :is="Component" />
+			</transition>
+		</RouterView>
 	</el-main>
 	<el-footer>
 		<Footer />
