@@ -1,7 +1,13 @@
 import { defineStore } from 'pinia'
 import piniaPersistConfig from '@/config/piniaPersist'
 import type { Viewer } from '@/global/viewer'
-import { getAllViewer, deleteViewer } from '@/api/modules/viewer'
+import {
+	getAllViewer,
+	deleteViewer,
+	getViewerBindUser,
+	deleteBeUser,
+	addBeUser
+} from '@/api/modules/viewer'
 
 export const useViewerStore = defineStore(
 	'viewer',
@@ -24,14 +30,30 @@ export const useViewerStore = defineStore(
 		async function deleteViewerAction(params: Viewer.ReqDelViewer) {
 			await deleteViewer(params)
 		}
+		// 获取监视人绑定的用户
+		async function getViewerBindUserAction(viewId: number) {
+			const { result } = await getViewerBindUser(viewId)
+			return result
+		}
+		// 解绑被监视人
+		async function deleteBeUserAction(params: Viewer.ReqDeleteOrAddBeUser) {
+			await deleteBeUser(params)
+		}
+		// 绑定被监视人
+		async function addBeUserAction(params: Viewer.ReqDeleteOrAddBeUser) {
+			await addBeUser(params)
+		}
 		return {
 			total,
 			viewerList,
 			getAllViewerAction,
-			deleteViewerAction
+			deleteViewerAction,
+			getViewerBindUserAction,
+			deleteBeUserAction,
+			addBeUserAction
 		}
 	},
 	{
-		persist: piniaPersistConfig('device', [])
+		persist: piniaPersistConfig('viewer', [])
 	}
 )
