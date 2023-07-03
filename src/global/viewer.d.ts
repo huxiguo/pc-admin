@@ -16,6 +16,13 @@ export namespace Viewer {
 		viewerList: any[]
 		total: number
 	}
+
 	// 删除监视人请求参数
 	export type ReqDelViewer = number[]
+
+	// 解绑被监视人请求参数
+	export interface ReqDeleteOrAddBeUser {
+		userId: number | null
+		viewId: number
+	}
 }

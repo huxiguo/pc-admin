@@ -11,6 +11,6 @@ export interface searchForm {
 
 export interface addUserDialogForm {
 	id: number
-	userId: number
+	userId: number | null
 	viewId: number
 }

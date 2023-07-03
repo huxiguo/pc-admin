@@ -13,7 +13,7 @@ const dialogVisible = ref(false)
 const addUserDialogForm = ref<addUserDialogForm>({
 	id: 0,
 	viewId: 0,
-	userId: 0
+	userId: null
 })
 
 // 分页器数据
@@ -93,12 +93,33 @@ const handleDeleteClick = async (id: number) => {
 	)
 }
 
+// 被绑定的用户
+const bindUser = ref([])
 // 点击设置被监视人按钮的回调
-const handleAddBeUserClick = (viewer: any) => {
+const handleAddBeUserClick = async (viewer: any) => {
+	bindUser.value = await viewerStore.getViewerBindUserAction(viewer.viewId)
 	dialogVisible.value = true
-	console.log(viewer)
-	// addUserDialogForm.viewId=viewer.viewId
-	// addUserDialogForm.id = viewer.
+	addUserDialogForm.value.viewId = viewer.viewId
+}
+
+// 解绑被监视人
+const handleDeleteBeUser = async (userId: number) => {
+	addUserDialogForm.value.userId = userId
+	const params = { ...addUserDialogForm.value, userId }
+	await viewerStore.deleteBeUserAction(params)
+	bindUser.value = await viewerStore.getViewerBindUserAction(
+		addUserDialogForm.value.viewId
+	)
+	ElMessage.success('解绑成功')
+}
+
+// 绑定被监视人
+const handleAddBeUser = async () => {
+	await viewerStore.addBeUserAction(addUserDialogForm.value)
+	bindUser.value = await viewerStore.getViewerBindUserAction(
+		addUserDialogForm.value.viewId
+	)
+	ElMessage.success('绑定成功')
 }
 </script>
 
@@ -290,21 +311,34 @@ const handleAddBeUserClick = (viewer: any) => {
 			center
 		>
 			<el-form :model="addUserDialogForm">
-				<el-form-item label="请输入被监视人的id：">
+				<el-form-item label="添加被监视人：">
 					<el-input
-						v-model="addUserDialogForm.userId"
-						placeholder="请输入被监视人id"
+						v-model.number="addUserDialogForm.userId"
+						placeholder="请输入被监视人的id，点击回车键以添加"
+						@keyup.enter="handleAddBeUser"
 					></el-input>
 				</el-form-item>
 			</el-form>
-			<template #footer>
-				<span class="dialog-footer">
-					<el-button @click="dialogVisible = false">取消</el-button>
-					<el-button type="primary" @click="dialogVisible = false">
-						确定
-					</el-button>
-				</span>
-			</template>
+			<!-- 被绑定的用户 -->
+			<el-table :data="bindUser" style="width: 100%">
+				<el-table-column prop="name" label="被监视人" align="center" />
+				<el-table-column label="操作" align="center">
+					<template #default="{ row }">
+						<el-popconfirm
+							title="是否解绑该用户?"
+							icon-color="#ff4949"
+							icon="WarnTriangleFilled"
+							@confirm="handleDeleteBeUser(row.userId)"
+						>
+							<template #reference>
+								<el-button type="danger" :icon="Delete" size="small"
+									>解绑</el-button
+								>
+							</template>
+						</el-popconfirm>
+					</template>
+				</el-table-column>
+			</el-table>
 		</el-dialog>
 	</div>
 </template>
