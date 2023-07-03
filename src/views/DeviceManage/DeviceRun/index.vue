@@ -143,13 +143,21 @@ const handleSelectionChange = (val: device[]) => {
 }
 // 表格操作栏switch点击回调
 const handleSwitchClick = async (row: device) => {
-	if (row.status === '1') {
-		// 将row的ID构造成数组
-		const idArr = [row.id]
-		await deviceStore.runDeviceAction(idArr)
-	} else if (row.status === '0') {
-		const idArr = [row.id]
-		await deviceStore.closeDeviceAction(idArr)
+	try {
+		if (row.status === '1') {
+			// 将row的ID构造成数组
+			const idArr = [row.id]
+			await deviceStore.runDeviceAction(idArr)
+		} else if (row.status === '0') {
+			const idArr = [row.id]
+			await deviceStore.closeDeviceAction(idArr)
+		}
+	} catch (err) {
+		if (err && row.status === '1') {
+			row.status = '0'
+		} else if (err && row.status === '0') {
+			row.status = '1'
+		}
 	}
 }
 // 取消选中按钮的回调
