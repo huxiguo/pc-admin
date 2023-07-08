@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FormRules, FormInstance } from 'element-plus'
-import { Plus, Delete, Download, Upload } from '@element-plus/icons-vue'
+import { Plus, Delete, Download, Upload, Edit } from '@element-plus/icons-vue'
 import { useUnitManngerStore } from '@/stores/modules/unitMannger'
 import { useDownload } from '@/hooks/useDownload'
 import type { dialogForm } from './Interface/form.d'
@@ -11,6 +11,9 @@ const unitManngerStore = useUnitManngerStore()
 
 const dialogVisible = ref(false)
 const dialogFormRef = ref<FormInstance>()
+
+// 对话框类型
+const dialogType = ref('')
 
 // 添加单位对话框form表单数据
 const dialogForm = ref<dialogForm>({
@@ -30,36 +33,57 @@ const rules = reactive<FormRules>({
 onMounted(() => {
 	unitManngerStore.getUnitListAction()
 })
+
 // 导出单位数据按钮回调
 const exportUnitsByExce = () => {
 	useDownload(unitManngerStore.exportUnitsByExcelAction, '班级信息')
 }
+
 // 删除单位按钮回调
 const handleDeleteBtnClick = async (unitsId: number) => {
 	await unitManngerStore.deleteUnitsAction(unitsId)
 	ElMessage.success('删除成功')
 	await unitManngerStore.getUnitListAction()
 }
+
 // 添加单位按钮回调
 const handleAddBtnClick = (parent: any) => {
-	dialogForm.value.parentId = parent.unitsId
 	dialogVisible.value = true
-	const { code } = parent
-	const arr = code.split('.')
+	dialogType.value = 'add'
+	dialogForm.value.parentId = parent.unitsId
 }
+
+// 编辑单位按钮回调
+const handleEditBtnClick = (codeData: any) => {
+	dialogType.value = 'edit'
+	dialogVisible.value = true
+	nextTick(() => {
+		dialogForm.value = JSON.parse(JSON.stringify(codeData))
+	})
+}
+
 // 添加对话框确认按钮回调
 const handleConfirmBtnClick = async (formEl: FormInstance | undefined) => {
 	if (!formEl) return
 	await formEl.validate(async valid => {
 		if (valid) {
-			await unitManngerStore.addUnitsAction(dialogForm.value)
-			dialogVisible.value = false
-			dialogFormRef.value?.resetFields()
-			ElMessage.success('添加成功')
-			await unitManngerStore.getUnitListAction()
+			if (dialogType.value === 'add') {
+				await unitManngerStore.addUnitsAction(dialogForm.value)
+				dialogVisible.value = false
+				dialogFormRef.value?.resetFields()
+				ElMessage.success('添加成功')
+				await unitManngerStore.getUnitListAction()
+			} else {
+				await unitManngerStore.editUnitsAction(dialogForm.value)
+				dialogVisible.value = false
+				dialogFormRef.value?.resetFields()
+				ElMessage.success('编辑成功')
+				await unitManngerStore.getUnitListAction()
+			}
 		}
 	})
 }
+
 // 对话框关闭回调
 const handleDialogClose = () => {
 	dialogVisible.value = false
@@ -102,7 +126,7 @@ const handleImportUnitsBtnClick = () => {
 				style="width: 100%"
 				row-key="unitsId"
 				border
-				lazy
+				:default-expand-all="true"
 			>
 				<el-table-column prop="name" label="名称"> </el-table-column>
 				<el-table-column prop="peoples" label="人数" align="center">
@@ -116,6 +140,13 @@ const handleImportUnitsBtnClick = () => {
 								:icon="Plus"
 								@click="handleAddBtnClick(scope.row)"
 								>添加单位</el-button
+							>
+							<el-button
+								text
+								type="primary"
+								:icon="Edit"
+								@click="handleEditBtnClick(scope.row)"
+								>编辑单位</el-button
 							>
 							<el-popconfirm
 								title="是否删除该单位?"
@@ -138,7 +169,7 @@ const handleImportUnitsBtnClick = () => {
 		<el-dialog
 			class="dialogBox"
 			v-model="dialogVisible"
-			title="添加单位"
+			:title="dialogType === 'add' ? '添加单位' : '编辑单位'"
 			:width="500"
 			center
 			@closed="handleDialogClose"

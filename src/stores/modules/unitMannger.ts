@@ -5,7 +5,8 @@ import {
 	exportUnitsByExcel,
 	addUnits,
 	deleteUnits,
-	importUnitByExcel
+	importUnitByExcel,
+	edidUnits
 } from '@/api/modules/unitMannger'
 import type { Unit } from '@/global/unit.d'
 
@@ -30,12 +31,16 @@ export const useUnitManngerStore = defineStore(
 			await importUnitByExcel(params)
 		}
 		// 添加单位
-		async function addUnitsAction(params: Unit.ReqAddUnits) {
+		async function addUnitsAction(params: Unit.ReqAddOrEditUnits) {
 			await addUnits(params)
 		}
 		// 删除单位
 		async function deleteUnitsAction(unitsId: number) {
 			await deleteUnits(unitsId)
+		}
+		// 编辑单位
+		async function editUnitsAction(params: Unit.ReqAddOrEditUnits) {
+			await edidUnits(params)
 		}
 		return {
 			classList,
@@ -43,7 +48,8 @@ export const useUnitManngerStore = defineStore(
 			exportUnitsByExcelAction,
 			addUnitsAction,
 			deleteUnitsAction,
-			importUnitByExcelAction
+			importUnitByExcelAction,
+			editUnitsAction
 		}
 	},
 	{

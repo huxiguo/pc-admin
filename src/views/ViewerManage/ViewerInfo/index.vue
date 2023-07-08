@@ -1,13 +1,23 @@
 <script setup lang="ts">
 import type { FormInstance } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { Edit, Delete, Search, View } from '@element-plus/icons-vue'
+import { Delete, Search, View } from '@element-plus/icons-vue'
 import { useViewerStore } from '@/stores/modules/viewer'
+import { useUserManngerStore } from '@/stores/modules/userMannger'
 import type { searchForm, addUserDialogForm } from './Interface/form'
 
 const viewerStore = useViewerStore()
+const userManngerStore = useUserManngerStore()
 
 const dialogVisible = ref(false)
+const addUserDialogRef = ref<FormInstance>()
+
+// 搜索被监视人的关键字
+const keyword = ref('')
+// 搜索被监视人结果
+const searchUserResult = ref()
+// 选中的监视人的userId
+const selectUserId = ref()
 
 // 添加被监视人对话框表单数据
 const addUserDialogForm = ref<addUserDialogForm>({
@@ -113,13 +123,39 @@ const handleDeleteBeUser = async (userId: number) => {
 	ElMessage.success('解绑成功')
 }
 
+// 搜索被监视人
+const searchUser = async () => {
+	searchUserResult.value = await userManngerStore.searchUserByKeywordAction(
+		keyword.value
+	)
+}
+
 // 绑定被监视人
 const handleAddBeUser = async () => {
+	addUserDialogForm.value.userId = selectUserId.value
 	await viewerStore.addBeUserAction(addUserDialogForm.value)
 	bindUser.value = await viewerStore.getViewerBindUserAction(
 		addUserDialogForm.value.viewId
 	)
 	ElMessage.success('绑定成功')
+}
+
+// 判断该监视人是否已被绑定
+const isBeUser = (user: any) => {
+	const { userId } = user
+	const result = bindUser.value.findIndex((item: any) => item.userId === userId)
+	if (result !== -1) {
+		return true
+	} else {
+		return false
+	}
+}
+
+// 设置被监视人对话框关闭回调
+const handleDialogClosed = () => {
+	keyword.value = ''
+	searchUserResult.value = []
+	addUserDialogRef.value?.resetFields()
 }
 </script>
 
@@ -208,7 +244,6 @@ const handleAddBeUser = async () => {
 							>
 								重置
 							</el-button>
-							<el-button>添加监视人</el-button>
 						</div>
 					</el-col></el-row
 				>
@@ -279,7 +314,6 @@ const handleAddBeUser = async () => {
 				<el-table-column label="操作" align="center" width="180px">
 					<template #default="{ row }">
 						<div class="perate">
-							<el-button text type="primary" :icon="Edit">编辑</el-button>
 							<el-button
 								text
 								type="primary"
@@ -309,14 +343,33 @@ const handleAddBeUser = async () => {
 			width="30%"
 			class="dialogBox"
 			center
+			@closed="handleDialogClosed"
 		>
-			<el-form :model="addUserDialogForm">
-				<el-form-item label="添加被监视人：">
+			<el-form :model="addUserDialogForm" ref="addUserDialogRef">
+				<el-form-item>
 					<el-input
-						v-model.number="addUserDialogForm.userId"
-						placeholder="请输入被监视人的id，点击回车键以添加"
-						@keyup.enter="handleAddBeUser"
+						:prefix-icon="Search"
+						v-model="keyword"
+						placeholder="请输入被监视人的姓名或学号，点击回车键以搜索"
+						@keyup.enter="searchUser"
 					></el-input>
+				</el-form-item>
+				<el-form-item>
+					<div class="searchUser">
+						<el-select
+							placeholder="请选择要添加的被监视人"
+							v-model="selectUserId"
+						>
+							<el-option
+								v-for="item in searchUserResult"
+								:key="item.userId"
+								:label="item.name"
+								:value="item.userId"
+								:disabled="isBeUser(item)"
+							/>
+						</el-select>
+						<el-button type="primary" @click="handleAddBeUser">添加</el-button>
+					</div>
 				</el-form-item>
 			</el-form>
 			<!-- 被绑定的用户 -->
@@ -360,6 +413,15 @@ const handleAddBeUser = async () => {
 	flex-direction: column;
 	.el-button {
 		margin-left: 0;
+	}
+}
+
+.searchUser {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	.el-select {
+		width: 80%;
 	}
 }
 </style>

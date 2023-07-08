@@ -12,7 +12,8 @@ import {
 	deleteUser,
 	deleteUnitUser,
 	deleteSessionUser,
-	deleteAccessRecord
+	deleteAccessRecord,
+	searchUserByKeyword
 } from '@/api/modules/userMannger'
 
 export const useUserManngerStore = defineStore(
@@ -89,6 +90,11 @@ export const useUserManngerStore = defineStore(
 		async function deleteAccessRecordAction(params: number[]) {
 			await deleteAccessRecord(params)
 		}
+		// 根据字段查找用户
+		async function searchUserByKeywordAction(keyword: string) {
+			const { result } = await searchUserByKeyword(keyword)
+			return result
+		}
 		return {
 			total,
 			userInOutData,
@@ -106,7 +112,8 @@ export const useUserManngerStore = defineStore(
 			deleteUserAction,
 			deleteUserByUnitsAction,
 			deleteUserBySessionAction,
-			deleteAccessRecordAction
+			deleteAccessRecordAction,
+			searchUserByKeywordAction
 		}
 	},
 	{

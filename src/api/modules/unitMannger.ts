@@ -17,11 +17,16 @@ export const importUnitByExcel = (params: FormData) => {
 }
 
 // 添加单位
-export const addUnits = (params: Unit.ReqAddUnits) => {
+export const addUnits = (params: Unit.ReqAddOrEditUnits) => {
 	return http.post('/addUnits', params)
 }
 
 // 删除单位
 export const deleteUnits = (unitsId: number) => {
 	return http.delete(`/deleteUnits/${unitsId}`)
+}
+
+// 编辑单位
+export const edidUnits = (params: Unit.ReqAddOrEditUnits) => {
+	return http.put('/editUnits', params)
 }
