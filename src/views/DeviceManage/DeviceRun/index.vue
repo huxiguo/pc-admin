@@ -319,6 +319,8 @@ const handleCancelSelectClick = () => {
 				<el-table-column prop="m_nPort" label="端口号" align="center" />
 				<!-- IP地址 -->
 				<el-table-column prop="m_strIp" label="IP地址" align="center" />
+				<!-- 密码 -->
+				<el-table-column prop="m_strPassword" label="密码" align="center" />
 				<!-- 出入类型 -->
 				<el-table-column
 					prop="type"
