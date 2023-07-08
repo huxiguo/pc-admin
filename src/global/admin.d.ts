@@ -13,6 +13,7 @@ export namespace Admin {
 		password: string
 		username: string
 		avatar: string
+		id: number
 	}
 
 	// 编辑管理员请求参数
@@ -23,6 +24,7 @@ export namespace Admin {
 		password: string
 		username: string
 		avatar: string
+		id: number
 	}
 
 	// 编辑管理员请求参数

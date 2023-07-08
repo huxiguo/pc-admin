@@ -39,6 +39,6 @@ export const useMenuStore = defineStore(
 		}
 	},
 	{
-		persist: piniaPersistConfig('device', [])
+		persist: piniaPersistConfig('menus', [])
 	}
 )

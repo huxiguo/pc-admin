@@ -5,7 +5,10 @@ import {
 	getAllAdmin,
 	addAdmin,
 	editAdmin,
-	deleteAdmin
+	deleteAdmin,
+	getAdminMenus,
+	addAdminMenu,
+	deleteAdminMenu
 } from '@/api/modules/admin'
 
 export const useAdminStore = defineStore(
@@ -36,16 +39,32 @@ export const useAdminStore = defineStore(
 		async function deleteAdminAction(params: Admin.ReqDelAdmin) {
 			await deleteAdmin(params)
 		}
+		// 获取管理员权限
+		async function getAdminMenusAction(adminId: number) {
+			const { result } = await getAdminMenus(adminId)
+			return result
+		}
+		// 添加管理员权限
+		async function addAdminMenuAction(adminId: number, menuIds: number[]) {
+			await addAdminMenu(adminId, menuIds)
+		}
+		// 删除管理员权限
+		async function deleteAdminMenuAction(adminId: number, menuIds: number[]) {
+			await deleteAdminMenu(adminId, menuIds)
+		}
 		return {
 			total,
 			adminList,
 			getAllAdminAction,
 			addAdminAction,
 			editAdminAction,
-			deleteAdminAction
+			deleteAdminAction,
+			getAdminMenusAction,
+			addAdminMenuAction,
+			deleteAdminMenuAction
 		}
 	},
 	{
-		persist: piniaPersistConfig('device', [])
+		persist: piniaPersistConfig('admin', [])
 	}
 )

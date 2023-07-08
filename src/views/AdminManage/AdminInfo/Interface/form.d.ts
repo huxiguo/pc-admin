@@ -5,6 +5,7 @@ export interface dialogForm {
 	password: string
 	username: string
 	avatar: string
+	id: number
 }
 
 export interface admin {
