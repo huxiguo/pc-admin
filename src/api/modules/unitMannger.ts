@@ -25,3 +25,8 @@ export const addUnits = (params: Unit.ReqAddUnits) => {
 export const deleteUnits = (unitsId: number) => {
 	return http.delete(`/deleteUnits/${unitsId}`)
 }
+
+// 编辑单位
+export const edidUnits = (params: Unit.ReqAddUnits) => {
+	return http.put('/editUnits', params)
+}
