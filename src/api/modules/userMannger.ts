@@ -104,3 +104,10 @@ export const deleteUnitUser = (params: User.ReqDeleteUserByUnits) => {
 			deviceNos.join(',')
 	)
 }
+
+/**
+ * 根据字段查找用户
+ */
+export const searchUserByKeyword = (keyword: string) => {
+	return http.get<User.ResUserList>(`/user/searchUserByKeyword/${keyword}`)
+}

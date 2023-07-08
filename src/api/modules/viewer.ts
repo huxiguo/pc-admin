@@ -32,3 +32,8 @@ export const deleteBeUser = (params: Viewer.ReqDeleteOrAddBeUser) => {
 export const addBeUser = (params: Viewer.ReqDeleteOrAddBeUser) => {
 	return http.post<any>('/viewer/addBeUser', params)
 }
+
+// 添加监视人
+export const addViewer = (params: any) => {
+	return http.post<any>('/viewer/addViewer', params)
+}

@@ -6,7 +6,8 @@ import {
 	deleteViewer,
 	getViewerBindUser,
 	deleteBeUser,
-	addBeUser
+	addBeUser,
+	addViewer
 } from '@/api/modules/viewer'
 
 export const useViewerStore = defineStore(
@@ -43,6 +44,10 @@ export const useViewerStore = defineStore(
 		async function addBeUserAction(params: Viewer.ReqDeleteOrAddBeUser) {
 			await addBeUser(params)
 		}
+		// 添加监视人
+		async function addViewerAction(params: any) {
+			await addViewer(params)
+		}
 		return {
 			total,
 			viewerList,
@@ -50,7 +55,8 @@ export const useViewerStore = defineStore(
 			deleteViewerAction,
 			getViewerBindUserAction,
 			deleteBeUserAction,
-			addBeUserAction
+			addBeUserAction,
+			addViewerAction
 		}
 	},
 	{
