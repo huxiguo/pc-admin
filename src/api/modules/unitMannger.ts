@@ -17,7 +17,7 @@ export const importUnitByExcel = (params: FormData) => {
 }
 
 // 添加单位
-export const addUnits = (params: Unit.ReqAddUnits) => {
+export const addUnits = (params: Unit.ReqAddOrEditUnits) => {
 	return http.post('/addUnits', params)
 }
 
@@ -27,6 +27,6 @@ export const deleteUnits = (unitsId: number) => {
 }
 
 // 编辑单位
-export const edidUnits = (params: Unit.ReqAddUnits) => {
+export const edidUnits = (params: Unit.ReqAddOrEditUnits) => {
 	return http.put('/editUnits', params)
 }
