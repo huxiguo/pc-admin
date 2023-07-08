@@ -22,3 +22,18 @@ export const editAdmin = (params: Admin.ReqEditAdmin) => {
 export const deleteAdmin = (params: Admin.ReqDelAdmin) => {
 	return http.delete<any>('/admin/backDelAdmin', params)
 }
+
+// 获取管理员权限
+export const getAdminMenus = (adminId: number) => {
+	return http.get<any>(`/admin/getAdminMenus/${adminId}`)
+}
+
+// 添加管理员权限
+export const addAdminMenu = (adminId: number, menuIds: number[]) => {
+	return http.post(`/admin/backAddAdminMenu/${adminId}`, menuIds)
+}
+
+// 删除管理员权限
+export const deleteAdminMenu = (adminId: number, menuIds: number[]) => {
+	return http.delete(`/admin/backDelAdminMenu/${adminId}`, menuIds)
+}

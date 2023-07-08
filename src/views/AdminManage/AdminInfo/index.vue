@@ -1,11 +1,20 @@
 <script setup lang="ts">
 import type { FormRules, FormInstance } from 'element-plus'
-import { Edit, Delete, Plus } from '@element-plus/icons-vue'
+import { Edit, Delete, Plus, Key } from '@element-plus/icons-vue'
 import { useAdminStore } from '@/stores/modules/admin'
+import { useMenuStore } from '@/stores/modules/menu'
 import type { dialogForm, admin } from './Interface/form'
 import { ElMessage, ElTable } from 'element-plus'
 
 const adminStore = useAdminStore()
+const menuStore = useMenuStore()
+
+const menuTreeRef = ref()
+// 编辑权限树形控件props配置项
+const props = {
+	label: 'title',
+	children: ''
+}
 
 // 分页器数据
 const currentPage = ref(1)
@@ -33,8 +42,9 @@ const rules = reactive<FormRules>({
 })
 
 // 获取表格数据
-onMounted(() => {
-	adminStore.getAllAdminAction(currentPage.value, pageSize.value)
+onMounted(async () => {
+	await adminStore.getAllAdminAction(currentPage.value, pageSize.value)
+	await menuStore.getAllMenuAction()
 })
 
 // 编辑框的类型（添加和编辑）
@@ -42,22 +52,26 @@ const dialogType = ref('')
 /**
  * 是否显示编辑用户对话框
  */
-const DialogVisible = ref(false)
-// dialogForm表单数据
+const dialogVisible = ref(false)
+// 添加管理员、编辑管理员信息表单数据
 const dialogForm = ref<dialogForm>({
 	name: '',
 	telephone: '',
 	address: '',
 	password: '',
 	username: '',
-	avatar: ''
+	avatar: '',
+	id: 0
 })
+// 当前选中的管理员的权限
+const selectAdminMenu = ref()
+
 /*
  * 添加管理员按钮回调
  */
 const handleAddBtnClick = () => {
-	dialogType.value = 'add'
-	DialogVisible.value = true
+	dialogType.value = 'addAdmin'
+	dialogVisible.value = true
 }
 // 选中禁用的管理员按钮的回调
 const handleSelectDisableClick = () => {
@@ -104,12 +118,12 @@ const handleSelectionChange = (val: admin[]) => {
 	multipleSelection.value = val
 }
 /**
- * 表格编辑按钮
+ * 表格编辑管理员信息按钮
  * @param rowData 行内数据
  */
-const handleEditBtnClick = (rowData: any) => {
-	dialogType.value = 'edit'
-	DialogVisible.value = true
+const handleEditInfoBtnClick = (rowData: any) => {
+	dialogType.value = 'editAdminInfo'
+	dialogVisible.value = true
 	nextTick(() => {
 		dialogForm.value = JSON.parse(JSON.stringify(rowData))
 	})
@@ -125,44 +139,80 @@ const handleDeleteBtnClick = async (id: string) => {
 		type: 'success'
 	})
 }
+// 编辑管理员权限按钮回调
+const handleEditMenuBtnClick = async (rowData: any) => {
+	const { id } = rowData
+	dialogForm.value.id = id
+	const data = await adminStore.getAdminMenusAction(id)
+	selectAdminMenu.value = data.map((item: any) => {
+		return item.id
+	})
+	dialogType.value = 'editAdminMenu'
+	dialogVisible.value = true
+}
 
 const dialogFormRef = ref<FormInstance>()
 /*
  * 对话框关闭回调
  */
 const handleEditClose = () => {
-	dialogType.value = ''
-	dialogFormRef.value?.resetFields()
-	DialogVisible.value = false
+	dialogVisible.value = false
+	nextTick(() => {
+		dialogType.value = ''
+		dialogFormRef.value?.resetFields()
+	})
 }
 // /*
 //  * 对话框确认按钮回调
 //  */
 const handleConfirmClick = async (formEl: FormInstance | undefined) => {
-	if (!formEl) return
-	await formEl.validate(async valid => {
-		if (valid) {
-			if (dialogType.value === 'add') {
-				await adminStore.addAdminAction(dialogForm.value)
-				DialogVisible.value = false
-				dialogFormRef.value?.resetFields()
-				await adminStore.getAllAdminAction(currentPage.value, pageSize.value)
-				ElMessage({
-					message: '添加成功',
-					type: 'success'
-				})
-			} else {
-				await adminStore.editAdminAction(dialogForm.value)
-				DialogVisible.value = false
-				dialogFormRef.value?.resetFields()
-				await adminStore.getAllAdminAction(currentPage.value, pageSize.value)
-				ElMessage({
-					message: '编辑成功',
-					type: 'success'
-				})
-			}
+	if (dialogType.value === 'editAdminMenu') {
+		const data = menuTreeRef.value.getCheckedNodes().map((item: any) => {
+			return item.id
+		})
+		let addIds: number[] = data.filter(
+			(id: number) => selectAdminMenu.value.indexOf(id) === -1
+		)
+		let deleteIds: number[] = selectAdminMenu.value.filter(
+			(id: number) => data.indexOf(id) === -1
+		)
+		if (addIds.length > 0) {
+			await adminStore.addAdminMenuAction(dialogForm.value.id, data)
 		}
-	})
+		if (deleteIds.length > 0) {
+			await adminStore.deleteAdminMenuAction(dialogForm.value.id, deleteIds)
+		}
+		ElMessage({
+			message: '编辑成功',
+			type: 'success'
+		})
+		dialogVisible.value = false
+	} else {
+		if (!formEl) return
+		await formEl.validate(async valid => {
+			if (valid) {
+				if (dialogType.value === 'addAdmin') {
+					await adminStore.addAdminAction(dialogForm.value)
+					dialogVisible.value = false
+					dialogFormRef.value?.resetFields()
+					await adminStore.getAllAdminAction(currentPage.value, pageSize.value)
+					ElMessage({
+						message: '添加成功',
+						type: 'success'
+					})
+				} else if (dialogType.value === 'editAdminInfo') {
+					await adminStore.editAdminAction(dialogForm.value)
+					dialogVisible.value = false
+					dialogFormRef.value?.resetFields()
+					await adminStore.getAllAdminAction(currentPage.value, pageSize.value)
+					ElMessage({
+						message: '编辑成功',
+						type: 'success'
+					})
+				}
+			}
+		})
+	}
 }
 </script>
 
@@ -245,9 +295,16 @@ const handleConfirmClick = async (formEl: FormInstance | undefined) => {
 							<el-button
 								text
 								type="primary"
+								:icon="Key"
+								@click="handleEditMenuBtnClick(scope.row)"
+								>编辑管理员权限</el-button
+							>
+							<el-button
+								text
+								type="primary"
 								:icon="Edit"
-								@click="handleEditBtnClick(scope.row)"
-								>编辑</el-button
+								@click="handleEditInfoBtnClick(scope.row)"
+								>编辑管理员信息</el-button
 							>
 							<el-popconfirm
 								title="是否删除该设备?"
@@ -277,18 +334,26 @@ const handleConfirmClick = async (formEl: FormInstance | undefined) => {
 		<!-- 编辑、添加对话框 -->
 		<el-dialog
 			class="dialogBox"
-			:model-value="DialogVisible"
-			:title="dialogType === 'add' ? '添加管理员' : '编辑管理员'"
+			:model-value="dialogVisible"
+			:title="
+				dialogType === 'addAdmin'
+					? '添加管理员'
+					: dialogType === 'editAdminInfo'
+					? '编辑管理员信息'
+					: '编辑管理员权限'
+			"
 			:width="500"
 			center
 			@closed="handleEditClose"
 		>
+			<!-- 编辑管理员信息、添加管理员表单 -->
 			<el-form
 				:model="dialogForm"
 				label-position="left"
 				label-width="95px"
 				ref="dialogFormRef"
 				:rules="rules"
+				v-if="dialogType !== 'editAdminMenu'"
 			>
 				<el-form-item label="姓名：" prop="name">
 					<el-input v-model="dialogForm.name" placeholder="请输入姓名" />
@@ -318,9 +383,20 @@ const handleConfirmClick = async (formEl: FormInstance | undefined) => {
 					/>
 				</el-form-item>
 			</el-form>
+			<!-- 编辑管理员权限表单 -->
+			<template v-else
+				><el-tree
+					ref="menuTreeRef"
+					:data="menuStore.menuList"
+					:props="props"
+					show-checkbox
+					node-key="id"
+					:default-checked-keys="selectAdminMenu"
+				/>
+			</template>
 			<template #footer>
 				<div class="dialog-footer">
-					<el-button @click="handleEditClose">取消</el-button>
+					<el-button @click="dialogVisible = false">取消</el-button>
 					<el-button type="primary" @click="handleConfirmClick(dialogFormRef)">
 						{{ dialogType === 'add' ? '添加' : '保存' }}
 					</el-button>
@@ -356,8 +432,9 @@ const handleConfirmClick = async (formEl: FormInstance | undefined) => {
 .perate {
 	display: flex;
 	justify-content: center;
+	flex-direction: column;
 	.el-button {
-		padding: 0;
+		margin-left: 0;
 	}
 }
 </style>
